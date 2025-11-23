@@ -1,0 +1,30 @@
+# Build artifacts
+/target/
+extension/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock for libraries (workspace is a library collection)
+# Uncomment if you want to track Cargo.lock:
+# Cargo.lock
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Extension build artifacts
+*.wasm
+extension.zip
+extension/auto-header-server
+
+# Package directory (no longer used)
+auto-header-package/
+*.tar.gz
+
+# Old scripts (keeping for reference but not needed)
+install.sh
+package.sh

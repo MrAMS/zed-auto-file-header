@@ -1,0 +1,111 @@
+# Auto Header Configuration File
+#
+# This file controls the header format that will be automatically inserted
+# into new empty files.
+#
+# BUILT-IN LANGUAGE SUPPORT:
+# The extension automatically detects 30+ programming languages and applies
+# appropriate comment formats. You only need to customize this file if you
+# want to override the built-in templates or set your author information.
+#
+# Supported languages with built-in templates:
+# - C/C++, C#, Java, JavaScript, TypeScript, Rust, Scala, Kotlin, Swift, Go
+# - Python (with encoding and docstring)
+# - Shell scripts (Bash, Zsh, Fish), Perl, Ruby, R, Julia
+# - HTML, XML, SVG, CSS, SCSS, SASS, LESS
+# - SQL, YAML, Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir, Vim
+#
+# Available template variables:
+#   {filename}  - Name of the file
+#   {filepath}  - Full path of the file
+#   {date}      - Current date (format: YYYY-MM-DD)
+#   {year}      - Current year
+#   {time}      - Current time (format: HH:MM:SS)
+#   {author}    - Author name (configured below)
+#   {email}     - Author email (configured below)
+#   {project}   - Project name (configured below)
+#   {copyright_holder} - Copyright holder (defaults to author name)
+#   {interpreter} - Interpreter for shebang (auto-detected)
+
+[author]
+name = "Your Name"
+email = "your.email@example.com"
+
+[project]
+name = "My Project"
+# Optional: Set a copyright holder (defaults to author name if not set)
+copyright_holder = ""
+
+[header]
+# Default template (used when no built-in template matches)
+# The built-in templates will be used automatically for known file types
+template = """/*
+ * File: {filename}
+ * Project: {project}
+ * Author: {author} <{email}>
+ * Created: {date} {time}
+ * 
+ * Copyright (c) {year} {copyright_holder}
+ * All rights reserved.
+ */
+
+"""
+
+# ============================================================================
+# CUSTOM TEMPLATES (Optional - Override built-in templates)
+# ============================================================================
+# Uncomment and customize any of these to override the built-in templates
+# for specific file types.
+
+# Example: Custom Python template with detailed docstring
+# [header.by_extension.py]
+# template = """#!/usr/bin/env python3
+# # -*- coding: utf-8 -*-
+# \"\"\"
+# {filename} - Brief description
+# 
+# Author: {author} <{email}>
+# Date: {date}
+# Project: {project}
+# 
+# Copyright (c) {year} {copyright_holder}
+# Licensed under MIT License
+# \"\"\"
+# 
+# """
+
+# Example: Custom Rust template with rustdoc format
+# [header.by_extension.rs]
+# template = """//! {filename}
+# //!
+# //! Author: {author}
+# //! Date: {date}
+# 
+# """
+
+# Example: Custom shell script with usage info
+# [header.by_extension.sh]
+# template = """#!/usr/bin/env bash
+# #
+# # {filename} - Brief description
+# # 
+# # Usage: {filename} [options]
+# #
+# # Author: {author}
+# # Date: {date}
+# #
+# 
+# set -euo pipefail
+# 
+# """
+
+# Example: Custom JavaScript/TypeScript with JSDoc
+# [header.by_extension.js]
+# template = """/**
+#  * @file {filename}
+#  * @author {author} <{email}>
+#  * @date {date}
+#  * @copyright {year} {copyright_holder}
+#  */
+# 
+# """
