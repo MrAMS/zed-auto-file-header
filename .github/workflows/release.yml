@@ -114,10 +114,6 @@ jobs:
             fi
           done
           ls -lh *.tar.gz *.zip 2>/dev/null || true
-          echo "=== Contents of artifacts directory ==="
-          ls -lh
-          echo "=== All tar.gz and zip files ==="
-          find . -name "*.tar.gz" -o -name "*.zip"
       
       - name: Create Release
         uses: softprops/action-gh-release@v1

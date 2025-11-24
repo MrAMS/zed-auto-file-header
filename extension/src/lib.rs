@@ -45,7 +45,16 @@ impl AutoHeaderExtension {
                 require_assets: true,
                 pre_release: false,
             },
-        )?;
+        )
+        .map_err(|e| {
+            format!(
+                "Auto File Header: Failed to fetch release from GitHub. \n\
+                Please check your internet connection and try again. \n\
+                If the problem persists, visit: https://github.com/MrAMS/zed-auto-file-header/releases \n\
+                Error: {}",
+                e
+            )
+        })?;
 
         let (platform, arch) = current_platform();
         let asset_name = match (platform, arch) {
@@ -56,7 +65,9 @@ impl AutoHeaderExtension {
             (Os::Windows, Architecture::X8664) => "x86_64-pc-windows-msvc",
             _ => {
                 return Err(format!(
-                    "Unsupported platform: {:?} {:?}",
+                    "Auto File Header: Unsupported platform {:?}-{:?}. \
+                    Supported platforms: Linux (x86_64/aarch64), macOS (x86_64/aarch64), Windows (x86_64). \
+                    Please report this issue at https://github.com/MrAMS/zed-auto-file-header/issues",
                     platform, arch
                 ))
             }
@@ -75,8 +86,14 @@ impl AutoHeaderExtension {
             .find(|asset| asset.name == asset_full_name)
             .ok_or_else(|| {
                 format!(
-                    "No asset found for platform {}-{} in release {}",
-                    asset_name, asset_extension, release.version
+                    "Auto File Header: Pre-built binary not found for your platform. \n\
+                    Looking for: {} \n\
+                    Release version: {} \n\
+                    Available assets: {} \n\
+                    Please report this at: https://github.com/MrAMS/zed-auto-file-header/issues",
+                    asset_full_name,
+                    release.version,
+                    release.assets.iter().map(|a| a.name.as_str()).collect::<Vec<_>>().join(", ")
                 )
             })?;
 
@@ -97,11 +114,28 @@ impl AutoHeaderExtension {
         };
 
         download_file(&asset.download_url, &version_dir, file_type)
-            .map_err(|e| format!("Failed to download server binary: {}", e))?;
+            .map_err(|e| {
+                format!(
+                    "Auto File Header: Failed to download and extract the language server binary. \n\
+                    Download URL: {} \n\
+                    Target directory: {} \n\
+                    Please check your internet connection and disk space. \n\
+                    Error: {}",
+                    asset.download_url, version_dir, e
+                )
+            })?;
 
         // Set executable permissions on Unix-like systems
         if platform != Os::Windows {
-            make_file_executable(&binary_path)?;
+            make_file_executable(&binary_path)
+                .map_err(|e| {
+                    format!(
+                        "Auto File Header: Failed to set executable permissions on binary. \n\
+                        Binary path: {} \n\
+                        Error: {}",
+                        binary_path, e
+                    )
+                })?;
         }
 
         self.cached_binary_path = Some(binary_path.clone());

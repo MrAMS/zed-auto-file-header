@@ -1,81 +1,82 @@
-auto-header/
 # Auto File Header - Zed Extension
 
-A Zed extension that inserts a customizable file header (Filename, Author, Date, Copyright) automatically when you create a new, empty file.
+A zero-dependency Zed extension that automatically inserts customizable file headers (Filename, Author, Date, Copyright) when you create a new, empty file.
 
 **Author:** MrAMS <2421653893@qq.com>  
 **Repository:** https://github.com/MrAMS/zed-auto-file-header  
-**Platforms:** Linux • macOS • Windows
+**Platforms:** Linux (x86_64/ARM64) • macOS (Intel/Apple Silicon) • Windows (x86_64)
 
-> Activation requires a `.auto-header.toml` in one of: project root, `~/.config/zed/auto-header.toml`, or `~/.auto-header.toml`. See [PLATFORM_SUPPORT.md](PLATFORM_SUPPORT.md) for OS-specific notes.
+## ✨ Key Features
 
-## Quick Start (Usage)
+- **🚀 Zero Dependencies**: No Rust or build tools required - downloads pre-built binaries automatically
+- **🌍 Cross-Platform**: Supports all major platforms and architectures
+- **⚡ Auto-Detection**: Recognizes 30+ programming languages with appropriate comment styles
+- **🎨 Fully Customizable**: Define global or per-language templates
+- **🔄 Dynamic Configuration**: Changes take effect immediately without restarting
 
-### Installation from Zed Extensions (When Published)
+## Quick Start
 
-Once published to the Zed extensions registry:
+### Installation from Zed Extensions
 
-1. Open Zed → Extensions panel
+1. Open Zed → Extensions panel (`Ctrl+Shift+P` → "zed: extensions")
 2. Search for "Auto File Header"
 3. Click Install
 4. Create config file (required):
    ```bash
    cp .auto-header.toml ~/.auto-header.toml
-   nano ~/.auto-header.toml   # edit values
+   nano ~/.auto-header.toml   # edit with your details
    ```
 5. Restart Zed
 
-**Zero Dependencies**: The extension automatically downloads the appropriate pre-built binary for your platform (Linux x86_64/ARM64, macOS Intel/Apple Silicon, or Windows x86_64). No Rust installation required!
+The extension automatically downloads the appropriate pre-built binary for your platform on first use. **No Rust installation required!**
 
 ### Development Installation
 
-1. Clone & enter the repository:
+1. Clone the repository:
    ```bash
    git clone https://github.com/MrAMS/zed-auto-file-header.git
    cd zed-auto-file-header
    ```
-2. Build native server binary (optional, extension auto-builds if needed):
-   ```bash
-   ./build-dev.sh
-   ```
-3. Install as a dev extension in Zed:
+
+2. Install as a dev extension in Zed:
    - Open Zed
    - `Ctrl+Shift+P` → `zed: install dev extension`
    - Select the `extension` directory
-4. Create a config (required for activation):
+
+3. Create a config file (required):
    ```bash
    cp .auto-header.toml ~/.auto-header.toml
-   nano ~/.auto-header.toml   # edit values
+   nano ~/.auto-header.toml   # edit with your details
    ```
-5. Restart Zed and create a new empty file → header is inserted.
 
-Configuration changes take effect immediately (no rebuild or restart needed after the initial activation).
+4. Restart Zed and create a new empty file → header is automatically inserted
+
+Configuration changes take effect immediately (no rebuild or restart needed).
 
 ## Header Example
 
-```
+```rust
 /*
  * File: example.rs
  * Project: My Project
  * Author: Your Name <your.email@example.com>
- * Created: 2025-11-23 19:30:00
+ * Created: 2025-11-24 19:30:00
  *
  * Copyright (c) 2025 Your Name
  * All rights reserved.
- *
- * Description:
- *   Add your file description here
  */
 ```
 
 ## Configuration
 
-Create `.auto-header.toml` with your details. Search order:
-1. Project root: `./.auto-header.toml`
-2. Zed config dir: `~/.config/zed/auto-header.toml`
-3. Home alternative: `~/.auto-header.toml`
+The extension searches for `.auto-header.toml` in the following locations (in order):
 
-Example:
+1. **Project root**: `./.auto-header.toml` (project-specific settings)
+2. **Zed config**: `~/.config/zed/auto-header.toml` (Linux/macOS) or `%APPDATA%\Zed\auto-header.toml` (Windows)
+3. **Home directory**: `~/.auto-header.toml` (user-wide settings)
+
+### Example Configuration
+
 ```toml
 [author]
 name = "Your Name"
@@ -83,82 +84,227 @@ email = "your.email@example.com"
 
 [project]
 name = "My Project"
-copyright_holder = "Your Company"
+copyright_holder = "Your Company"  # Optional, defaults to author name
 
 [header]
-template = """/*\n * File: {filename}\n * Author: {author} <{email}>\n * Date: {date}\n * Copyright (c) {year} {copyright_holder}\n */\n\n"""
+template = """
+/*
+ * File: {filename}
+ * Project: {project}
+ * Author: {author} <{email}>
+ * Created: {date} {time}
+ *
+ * Copyright (c) {year} {copyright_holder}
+ * All rights reserved.
+ */
+
+"""
 ```
 
 ### Template Variables
-`{filename}` `{filepath}` `{date}` `{year}` `{time}` `{author}` `{email}` `{project}` `{copyright_holder}`
 
-### Override Per Extension
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `{filename}` | File name only | `example.rs` |
+| `{filepath}` | Full file path | `/home/user/project/example.rs` |
+| `{date}` | Current date | `2025-11-24` |
+| `{time}` | Current time | `19:30:00` |
+| `{year}` | Current year | `2025` |
+| `{author}` | Author name | `Your Name` |
+| `{email}` | Author email | `your.email@example.com` |
+| `{project}` | Project name | `My Project` |
+| `{copyright_holder}` | Copyright holder | `Your Company` |
+| `{interpreter}` | Script interpreter | `python3`, `bash`, etc. |
+
+### Per-Extension Templates
+
+Override the default template for specific file extensions:
+
 ```toml
 [header.by_extension.py]
-template = """# File: {filename}\n# Author: {author}\n# Date: {date}\n\n"""
+template = """
+# -*- coding: utf-8 -*-
+\"\"\"
+File: {filename}
+Project: {project}
+Author: {author} <{email}>
+Created: {date} {time}
+
+Copyright (c) {year} {copyright_holder}
+All rights reserved.
+\"\"\"
+
+"""
 
 [header.by_extension.sh]
-template = """#!/bin/bash\n# File: {filename}\n# Author: {author}\n# Date: {date}\n\n"""
+template = """
+#!/usr/bin/env bash
+#
+# File: {filename}
+# Author: {author}
+# Date: {date}
+#
+
+"""
 
 [header.by_extension.html]
-template = """<!--\n  File: {filename}\n  Author: {author}\n  Date: {date}\n-->\n\n"""
+template = """
+<!--
+  File: {filename}
+  Author: {author}
+  Date: {date}
+-->
+
+"""
 ```
 
 ## Built-in Language Support
-Automatically detects and applies suitable comment styles for 30+ languages, including:
-- C / C++ / C# / Java / JavaScript / TypeScript / Rust / Go / Swift / Kotlin / Objective-C / Scala
-- Python (encoding/docstring aware)
-- Shell: Bash, Zsh, Fish + Ruby, Perl
-- HTML / XML / SVG
-- CSS / SCSS / SASS / LESS
-- SQL, YAML, Lua, Haskell, Lisp family, Erlang, Elixir, Vim script, R, Julia
 
-## Architecture
-This extension uses an LSP Wrapper design:
-- Rust server binary (`tower-lsp`) listening to `didOpen` and injecting headers into empty files.
-- Wasm Zed shim launching the server and handling path resolution.
+The extension automatically recognizes and applies appropriate comment styles for 30+ languages:
 
-## Project Structure
-```
+### Block Comment Languages
+C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala, Objective-C
 
-├── Cargo.toml          # Workspace root
-├── extension/          # Wasm extension shim
-│   ├── Cargo.toml
-│   ├── extension.toml  # Zed extension manifest
-│   └── src/lib.rs
-└── server/             # LSP server logic
-    ├── Cargo.toml
-    └── src/main.rs
-```
+### Line Comment Languages  
+Python (with encoding), Shell (Bash, Zsh, Fish), Ruby, Perl, R, Julia
+
+### Markup Languages
+HTML, XML, SVG
+
+### Style Languages
+CSS, SCSS, SASS, LESS
+
+### Database Languages
+SQL
+
+### Configuration Languages
+YAML
+
+### Other Languages
+Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir, Vim script
+
+For details, see [LANGUAGES.md](LANGUAGES.md).
+
+## Troubleshooting
+
+### Extension not working
+
+1. **Check config file exists**: The extension only activates when a `.auto-header.toml` file is found in one of the search locations.
+   ```bash
+   # Verify config file exists
+   ls -la ~/.auto-header.toml
+   # or
+   ls -la ~/.config/zed/auto-header.toml
+   ```
+
+2. **Restart Zed**: After creating or modifying the config file for the first time, restart Zed.
+
+3. **Check Zed logs**: Open Zed's log panel to see detailed error messages:
+   - `Ctrl+Shift+P` → "zed: open log"
+
+### Download failures
+
+If you see errors like "Failed to fetch release from GitHub":
+
+1. **Check internet connection**: Ensure you can access github.com
+2. **Manual download**: Download the binary manually from [Releases](https://github.com/MrAMS/zed-auto-file-header/releases) and place it in your project directory with the name:
+   - Linux: `auto-header-server`
+   - macOS: `auto-header-server`
+   - Windows: `auto-header-server.exe`
+
+### Platform not supported
+
+If you see "Unsupported platform" errors:
+
+- **Supported platforms**:
+  - Linux: x86_64, ARM64
+  - macOS: x86_64 (Intel), ARM64 (Apple Silicon)
+  - Windows: x86_64
+
+- Report unsupported platforms at: https://github.com/MrAMS/zed-auto-file-header/issues
+
+### Headers not inserting
+
+1. **File must be completely empty**: The extension only inserts headers into newly created, empty files
+2. **Config must exist**: Ensure `.auto-header.toml` is in a search location
+3. **Check language support**: Verify your file extension is recognized
 
 ## Development
-### Build (Manual)
+
+### Project Structure
+
+```
+├── Cargo.toml              # Workspace root
+├── .github/workflows/
+│   └── release.yml         # Automated cross-platform builds
+├── extension/              # Zed extension (Wasm)
+│   ├── Cargo.toml
+│   ├── extension.toml      # Extension manifest
+│   └── src/lib.rs          # Binary download & LSP launcher
+└── server/                 # Language server (native)
+    ├── Cargo.toml
+    └── src/main.rs         # LSP server logic
+```
+
+### Building Locally
+
+**Server binary:**
 ```bash
 cargo build --release --package auto-header-server
+# Output: target/release/auto-header-server
 ```
-Binary: `target/release/auto-header-server`
 
-### Build Wasm Component
+**Extension Wasm:**
 ```bash
 rustup target add wasm32-wasip1
 cargo build --release --package auto-header-extension --target wasm32-wasip1
+# Output: target/wasm32-wasip1/release/auto_header_extension.wasm
 ```
-Wasm: `target/wasm32-wasip1/release/auto_header_extension.wasm`
 
-### Test Server Directly
+### Testing
+
+**Test server directly:**
 ```bash
 cargo run --package auto-header-server
+# Sends LSP messages via stdin
 ```
-Send LSP messages via stdin to inspect behavior.
 
-## Customization Summary
-Use `.auto-header.toml` to change global or extension-specific templates; no source edits required.
+**Test extension in Zed:**
+1. Build the extension Wasm (see above)
+2. `Ctrl+Shift+P` → "zed: install dev extension" → select `extension/` directory
+3. Create a new file to test
+
+### Release Process
+
+Tags matching `v*` automatically trigger GitHub Actions to build binaries for all platforms and publish a release. See [PUBLISHING.md](PUBLISHING.md) for details.
+
+## Architecture
+
+This extension uses an **LSP Wrapper** design:
+
+1. **Zed Extension (Wasm)**: 
+   - Checks for cached/local `auto-header-server` binary
+   - Downloads from GitHub Releases if not found
+   - Launches the LSP server
+
+2. **LSP Server (Native)**:
+   - Listens for `didOpen` events
+   - Checks if file is empty and config exists
+   - Injects appropriate header template
+
+This architecture enables zero-dependency installation while maintaining full LSP capabilities.
 
 ## License
+
 MIT License © 2025 MrAMS
 
 ## Contributing
-Issues & PRs welcome: [GitHub repository](https://github.com/MrAMS/zed-auto-file-header)
-## (Removed outdated content)
-Outdated references to `install.sh`, `setup-config.sh`, and `auto-header-package/` have been removed.
+
+Issues and pull requests are welcome!
+
+**Repository:** https://github.com/MrAMS/zed-auto-file-header
+
+---
+
+**Note:** This extension requires a `.auto-header.toml` configuration file to activate. Without it, the extension will not insert headers.
 
