@@ -43,7 +43,7 @@ impl AutoHeaderExtension {
             "MrAMS/zed-auto-file-header",
             GithubReleaseOptions {
                 require_assets: true,
-                pre_release: false,
+                pre_release: true,  // Allow prereleases for now
             },
         )?;
 

@@ -118,7 +118,9 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: artifacts/*.{tar.gz,zip}
+          files: |
+            artifacts/*.tar.gz
+            artifacts/*.zip
           draft: false
           prerelease: false
           generate_release_notes: true
