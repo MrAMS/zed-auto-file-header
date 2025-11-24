@@ -106,6 +106,27 @@ impl AutoHeaderExtension {
             return Ok(binary_path);
         }
 
+        // Notify user about first-time download
+        // Note: This error message will be shown in Zed's status bar/log
+        eprintln!(
+            "[Auto File Header] First-time setup: Downloading language server binary...\n\
+            Platform: {}-{}\n\
+            Version: {}\n\
+            Size: ~2-3 MB\n\
+            This only happens once. Please wait a moment...",
+            match platform {
+                Os::Linux => "Linux",
+                Os::Mac => "macOS",
+                Os::Windows => "Windows",
+            },
+            match arch {
+                Architecture::X8664 => "x86_64",
+                Architecture::Aarch64 => "ARM64",
+                _ => "unknown",
+            },
+            release.version
+        );
+
         // Download and extract
         let file_type = if platform == Os::Windows {
             DownloadedFileType::Zip
@@ -137,6 +158,8 @@ impl AutoHeaderExtension {
                     )
                 })?;
         }
+
+        eprintln!("[Auto File Header] ✓ Download complete! Language server is ready.");
 
         self.cached_binary_path = Some(binary_path.clone());
         Ok(binary_path)
