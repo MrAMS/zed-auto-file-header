@@ -11,12 +11,30 @@ A Zed extension that inserts a customizable file header (Filename, Author, Date,
 
 ## Quick Start (Usage)
 
+### Installation from Zed Extensions (When Published)
+
+Once published to the Zed extensions registry:
+
+1. Open Zed → Extensions panel
+2. Search for "Auto File Header"
+3. Click Install
+4. Create config file (required):
+   ```bash
+   cp .auto-header.toml ~/.auto-header.toml
+   nano ~/.auto-header.toml   # edit values
+   ```
+5. Restart Zed
+
+**Zero Dependencies**: The extension automatically downloads the appropriate pre-built binary for your platform (Linux x86_64/ARM64, macOS Intel/Apple Silicon, or Windows x86_64). No Rust installation required!
+
+### Development Installation
+
 1. Clone & enter the repository:
    ```bash
    git clone https://github.com/MrAMS/zed-auto-file-header.git
    cd zed-auto-file-header
    ```
-2. Build native server binary (helper script):
+2. Build native server binary (optional, extension auto-builds if needed):
    ```bash
    ./build-dev.sh
    ```

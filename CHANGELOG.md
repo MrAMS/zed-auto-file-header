@@ -1,16 +1,71 @@
 # Changelog
 
+## Version 0.2.0 - 2024-11-24
+
+### 🎉 Major Changes - Zero Dependencies!
+
+**BREAKING CHANGE**: Complete architectural overhaul - users no longer need Rust installed!
+
+- **Zero Dependencies**: Extension now downloads pre-built binaries from GitHub Releases automatically
+- **Instant Startup**: No compilation delay - binaries download in seconds (vs 1-2 minutes compilation)
+- **Cross-Platform Binaries**: Pre-built for Linux (x86_64, ARM64), macOS (Intel, Apple Silicon), Windows (x86_64)
+- **GitHub Actions CI/CD**: Automated cross-platform builds on every release
+
+### Technical Implementation
+
+- Uses Zed Extension API's `latest_github_release()` and `download_file()` functions
+- Automatically detects platform and architecture via `current_platform()`
+- Downloads appropriate binary archive (.tar.gz for Unix, .zip for Windows)
+- Caches binary for instant subsequent launches
+- Binary size: ~2-3MB per platform
+
+### Migration Notes for Users
+
+Upgrading from v0.1.x:
+- **No longer need** Rust toolchain installed
+- **First launch** downloads binary instead of compiling (much faster)
+- **No code changes** needed in your projects or configs
+- Extension will automatically clean up old compiled binaries
+
+### Migration Notes for Developers
+
+- Replaced `std::process::Command::new("cargo")` with `download_file()`
+- Added `.github/workflows/release.yml` for automated builds
+- Updated all documentation to reflect zero-dependency approach
+
 ## Version 0.1.3
 
-### Changes
-- Cross-platform path handling (Linux/macOS/Windows) unified.
-- Dynamic config reload per header insertion (removed stale cache).
-- Removed obsolete packaging & install scripts (`package.sh`, `install.sh`, `setup-config.sh`).
-- Updated documentation (README, README_CN, QUICKSTART, ARCHITECTURE, TESTING).
-- Embedded server fallback for non-Windows builds.
+### Major Changes
+- **Auto-build LSP server**: Extension now automatically compiles the LSP server binary on first use when installed from Zed extensions registry
+- **Workspace folder tracking**: Fixed bug where files in subdirectories didn't trigger header insertion
+- **Cross-platform path handling**: Unified for Linux/macOS/Windows
+
+### Features
+- Dynamic config reload per header insertion (no stale cache)
+- Proper workspace root detection from LSP initialization params
+- Auto-compilation fallback when binary not found
+
+### Bug Fixes
+- **Critical**: Files in project subdirectories now correctly insert headers (was using file parent instead of workspace root)
+- Removed embedded binary approach (incompatible with published extensions)
+
+### Documentation
+- Added PUBLISHING.md with detailed publication guide
+- Updated README with installation methods (registry vs dev)
+- Removed obsolete scripts (`package.sh`, `install.sh`, `setup-config.sh`)
+- Updated QUICKSTART, ARCHITECTURE, TESTING guides
+
+### Breaking Changes
+- Users installing from registry will need Rust via rustup (first-time build ~1-2 min)
+- Dev installation no longer requires pre-building (optional via `build-dev.sh`)
+
+### Technical Details
+- Extension structure: `extension/` subdirectory (requires `path` field in extensions.toml)
+- Build process: `cargo build --release` invoked automatically
+- Binary caching: Built once, reused for subsequent launches
 
 ### Notes
-Activation now strictly requires a `.auto-header.toml` in project or global locations.
+Activation strictly requires `.auto-header.toml` in project/global locations.
 
 ## Version 0.1.0
 

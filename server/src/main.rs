@@ -323,12 +323,18 @@ struct AutoHeaderServer {
     client: Client,
     // retained for future feature (e.g., config watching); currently dynamic reload used
     _initial_config: Config,
+    // Store workspace root(s) from initialization
+    workspace_folders: std::sync::Arc<tokio::sync::RwLock<Vec<std::path::PathBuf>>>,
 }
 
 impl AutoHeaderServer {
     fn new(client: Client) -> Self {
         let initial_config = Config::load();
-        Self { client, _initial_config: initial_config }
+        Self { 
+            client, 
+            _initial_config: initial_config,
+            workspace_folders: std::sync::Arc::new(tokio::sync::RwLock::new(Vec::new())),
+        }
     }
 
     fn generate_header(&self, file_path: &str, workspace_root: Option<&Path>) -> String {
@@ -394,7 +400,22 @@ impl AutoHeaderServer {
 
 #[tower_lsp::async_trait]
 impl LanguageServer for AutoHeaderServer {
-    async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
+    async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
+        // Store workspace folders from initialization
+        let mut folders = self.workspace_folders.write().await;
+        
+        if let Some(workspace_folders) = params.workspace_folders {
+            for folder in workspace_folders {
+                if let Ok(path) = folder.uri.to_file_path() {
+                    folders.push(path);
+                }
+            }
+        } else if let Some(root_uri) = params.root_uri {
+            if let Ok(path) = root_uri.to_file_path() {
+                folders.push(path);
+            }
+        }
+        
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
                 text_document_sync: Some(TextDocumentSyncCapability::Kind(
@@ -420,7 +441,7 @@ impl LanguageServer for AutoHeaderServer {
         let uri = params.text_document.uri;
         let content = params.text_document.text;
 
-        // Extract workspace root from file path (parent directory of the file)
+        // Convert URI to file path
         // Handle cross-platform URI paths:
         // - Unix: file:///home/user/project/file.rs
         // - Windows: file:///C:/Users/user/project/file.rs
@@ -439,7 +460,12 @@ impl LanguageServer for AutoHeaderServer {
         };
         
         let file_path = Path::new(file_path_str);
-        let workspace_root = file_path.parent();
+        
+        // Find the workspace root by checking which workspace folder contains this file
+        let folders = self.workspace_folders.read().await;
+        let workspace_root = folders.iter()
+            .find(|folder| file_path.starts_with(folder))
+            .map(|p| p.as_path());
 
         // Only insert header if:
         // 1. File is completely empty
