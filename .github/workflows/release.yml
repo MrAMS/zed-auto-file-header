@@ -48,6 +48,19 @@ jobs:
         working-directory: server
         run: cargo build --release --target ${{ matrix.target }}
       
+      - name: Debug - List build output
+        shell: bash
+        run: |
+          echo "=== Looking for binary: ${{ matrix.binary_name }} ==="
+          echo "=== Checking server/target structure ==="
+          ls -la server/target/ || true
+          echo "=== Checking server/target/${{ matrix.target }} ==="
+          ls -la server/target/${{ matrix.target }}/ || true
+          echo "=== Checking server/target/${{ matrix.target }}/release ==="
+          ls -la server/target/${{ matrix.target }}/release/ || true
+          echo "=== Finding all auto-header-server* files ==="
+          find server/target -name "auto-header-server*" -type f || true
+      
       - name: Prepare artifact
         shell: bash
         run: |
@@ -57,8 +70,6 @@ jobs:
           
           if [ ! -f "$BINARY_PATH" ]; then
             echo "Binary not found at: $BINARY_PATH"
-            echo "Contents of server/target/${{ matrix.target }}/release/:"
-            ls -la "server/target/${{ matrix.target }}/release/" || echo "Directory does not exist"
             exit 1
           fi
           
