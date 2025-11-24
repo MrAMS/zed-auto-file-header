@@ -1,7 +1,8 @@
 use std::fs;
 use zed_extension_api::{
     self as zed, current_platform, download_file, latest_github_release, make_file_executable,
-    Architecture, DownloadedFileType, GithubReleaseOptions, Os, Result,
+    set_language_server_installation_status, Architecture, DownloadedFileType,
+    GithubReleaseOptions, LanguageServerInstallationStatus, Os, Result,
 };
 
 struct AutoHeaderExtension {
@@ -9,7 +10,11 @@ struct AutoHeaderExtension {
 }
 
 impl AutoHeaderExtension {
-    fn language_server_binary_path(&mut self, worktree: &zed::Worktree) -> Result<String> {
+    fn language_server_binary_path(
+        &mut self,
+        language_server_id: &zed::LanguageServerId,
+        worktree: &zed::Worktree,
+    ) -> Result<String> {
         // Return cached path if available
         if let Some(ref path) = self.cached_binary_path {
             if std::path::Path::new(path).exists() {
@@ -106,25 +111,10 @@ impl AutoHeaderExtension {
             return Ok(binary_path);
         }
 
-        // Notify user about first-time download
-        // Note: This error message will be shown in Zed's status bar/log
-        eprintln!(
-            "[Auto File Header] First-time setup: Downloading language server binary...\n\
-            Platform: {}-{}\n\
-            Version: {}\n\
-            Size: ~2-3 MB\n\
-            This only happens once. Please wait a moment...",
-            match platform {
-                Os::Linux => "Linux",
-                Os::Mac => "macOS",
-                Os::Windows => "Windows",
-            },
-            match arch {
-                Architecture::X8664 => "x86_64",
-                Architecture::Aarch64 => "ARM64",
-                _ => "unknown",
-            },
-            release.version
+        // Notify user: downloading binary
+        set_language_server_installation_status(
+            language_server_id,
+            &LanguageServerInstallationStatus::Downloading,
         );
 
         // Download and extract
@@ -159,7 +149,11 @@ impl AutoHeaderExtension {
                 })?;
         }
 
-        eprintln!("[Auto File Header] ✓ Download complete! Language server is ready.");
+        // Download complete
+        set_language_server_installation_status(
+            language_server_id,
+            &LanguageServerInstallationStatus::None,
+        );
 
         self.cached_binary_path = Some(binary_path.clone());
         Ok(binary_path)
@@ -175,10 +169,10 @@ impl zed::Extension for AutoHeaderExtension {
 
     fn language_server_command(
         &mut self,
-        _language_server_id: &zed::LanguageServerId,
+        language_server_id: &zed::LanguageServerId,
         worktree: &zed::Worktree,
     ) -> Result<zed::Command> {
-        let binary_path = self.language_server_binary_path(worktree)?;
+        let binary_path = self.language_server_binary_path(language_server_id, worktree)?;
         
         Ok(zed::Command {
             command: binary_path,
