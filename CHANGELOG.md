@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 0.2.2 - 2025-11-24
+
+### 🎨 User Experience
+
+- **Download Status Indicator**: Added native Zed status bar notification during first-time binary download
+  - Shows "auto-header: Downloading..." in status bar
+  - Uses official Zed `set_language_server_installation_status()` API
+  - Status automatically clears when download completes
+  - Much cleaner UX compared to console logs
+
+### 🔧 Technical Improvements
+
+- Integrated with Zed's `LanguageServerInstallationStatus` API for proper status reporting
+- Removed verbose eprintln logs in favor of native UI integration
+- Better alignment with Zed extension best practices
+
 ## Version 0.2.1 - 2025-11-24
 
 ### 🔧 Improvements

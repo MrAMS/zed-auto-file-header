@@ -1,7 +1,7 @@
 id = "auto-header"
 name = "Auto File Header"
 description = "Automatically inserts file headers when creating new files. Zero dependencies - downloads pre-built binaries automatically. Needs .auto-header.toml config."
-version = "0.2.1"
+version = "0.2.2"
 schema_version = 1
 authors = ["MrAMS <2421653893@qq.com>"]
 repository = "https://github.com/MrAMS/zed-auto-file-header"
