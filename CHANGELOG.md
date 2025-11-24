@@ -1,5 +1,36 @@
 # Changelog
 
+## Version 0.2.1 - 2025-11-24
+
+### 🔧 Improvements
+
+- **Enhanced Error Messages**: Added detailed, user-friendly error messages for all failure scenarios:
+  - Unsupported platforms: Lists all supported platforms with issue reporting link
+  - Download failures: Shows URL, target directory, and network troubleshooting tips
+  - Asset not found: Displays expected filename and available assets for debugging
+  - Permission failures: Shows binary path and detailed error information
+
+### 📚 Documentation
+
+- **Comprehensive README Updates**: 
+  - Complete rewrite emphasizing zero-dependency architecture
+  - Added detailed troubleshooting section covering common issues
+  - Improved quick start guide with clearer steps
+  - Platform support matrix with all supported architectures
+  - Better configuration examples and template variables documentation
+- **Chinese Documentation**: Fully synchronized README_CN.md with all improvements
+- **Project Cleanup**: Removed outdated documentation files (ARCHITECTURE.md, QUICKSTART.md, etc.)
+
+### 🐛 Bug Fixes
+
+- **Critical**: Fixed `pre_release` flag set to `false` to correctly fetch stable releases (was causing "finding a prerelease" errors)
+
+### 🧹 Code Quality
+
+- Cleaned up GitHub Actions workflow (removed debug output)
+- Improved code organization and error handling
+- Better separation of concerns in extension code
+
 ## Version 0.2.0 - 2024-11-24
 
 ### 🎉 Major Changes - Zero Dependencies!
