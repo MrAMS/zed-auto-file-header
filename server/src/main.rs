@@ -136,18 +136,25 @@ impl Config {
             .and_then(|e| e.to_str())
             .unwrap_or("");
 
-        // Check if user has custom template for this extension
+        // Priority 1: Check if user has custom template for this specific extension
         if let Some(ext_config) = self.header.by_extension.get(ext) {
             return ext_config.template.clone();
         }
 
-        // Use built-in language-specific templates
+        // Priority 2: Use user's default template from [header] section
+        // Only use built-in templates if user hasn't specified a default template
+        // (i.e., if they're using the hardcoded default template)
+        if self.header.template != Config::default().header.template {
+            return self.header.template.clone();
+        }
+
+        // Priority 3: Use built-in language-specific templates as fallback
         let builtin_template = Self::get_builtin_template(ext);
         if !builtin_template.is_empty() {
             return builtin_template;
         }
         
-        // Fall back to default template
+        // Priority 4: Fall back to default template
         self.header.template.clone()
     }
 
