@@ -3,29 +3,29 @@
 # This file controls the header format that will be automatically inserted
 # into new empty files.
 #
-# BUILT-IN LANGUAGE SUPPORT:
-# The extension automatically detects 30+ programming languages and applies
-# appropriate comment formats. You only need to customize this file if you
-# want to override the built-in templates or set your author information.
-#
-# Supported languages with built-in templates:
-# - C/C++, C#, Java, JavaScript, TypeScript, Rust, Scala, Kotlin, Swift, Go
-# - Python (with encoding and docstring)
-# - Shell scripts (Bash, Zsh, Fish), Perl, Ruby, R, Julia
-# - HTML, XML, SVG, CSS, SCSS, SASS, LESS
-# - SQL, YAML, Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir, Vim
+# AUTOMATIC COMMENT WRAPPING:
+# The extension automatically wraps your template content with
+# language-appropriate comment syntax. This means you can write your content
+# ONCE without comment markers, and it will be wrapped correctly for each language:
+#   - C/Rust/JavaScript: /* ... */
+#   - Python: """ ... """
+#   - Shell scripts: # ... with shebang
+#   - HTML: <!-- ... -->
+#   - Verilog/SystemVerilog: // ...
+#   - Tcl: # ...
+#   - And 35+ more languages!
 #
 # Available template variables:
-#   {filename}  - Name of the file
-#   {filepath}  - Full path of the file
-#   {date}      - Current date (format: YYYY-MM-DD)
-#   {year}      - Current year
-#   {time}      - Current time (format: HH:MM:SS)
-#   {author}    - Author name (configured below)
-#   {email}     - Author email (configured below)
-#   {project}   - Project name (configured below)
-#   {copyright_holder} - Copyright holder (defaults to author name)
-#   {interpreter} - Interpreter for shebang (auto-detected)
+#   {filename}  - Name of the file (example.rs)
+#   {filepath}  - Full path (/home/user/project/example.rs)
+#   {date}      - Current date (2025-12-04)
+#   {year}      - Current year (2025)
+#   {time}      - Current time (19:30:00)
+#   {author}    - Your name
+#   {email}     - Your email
+#   {project}   - Project name
+#   {copyright_holder} - Copyright holder (defaults to author)
+#   {interpreter} - Script interpreter (python3, bash, etc.)
 
 [author]
 name = "Your Name"
@@ -37,31 +37,80 @@ name = "My Project"
 copyright_holder = ""
 
 [header]
-# Default template (used when no built-in template matches)
-# The built-in templates will be used automatically for known file types
-template = """/*
- * File: {filename}
- * Project: {project}
- * Author: {author} <{email}>
- * Created: {date} {time}
- * 
- * Copyright (c) {year} {copyright_holder}
- * All rights reserved.
- */
+# The [header] section is OPTIONAL - if omitted, a simple default template will be used.
+# Write your template content WITHOUT comment markers!
+# The extension automatically wraps it with the correct format for each language.
+template = """
+File: {filename}
+Project: {project}
+Author: {author} <{email}>
+Created: {date} {time}
 
+Copyright (c) {year} {copyright_holder}
+All rights reserved.
 """
 
 # ============================================================================
-# CUSTOM TEMPLATES (Optional - Override built-in templates)
+# OPEN SOURCE LICENSE EXAMPLES
 # ============================================================================
-# Uncomment and customize any of these to override the built-in templates
-# for specific file types.
+# You can easily include open source licenses in your headers:
 
-# Example: Custom Python template with detailed docstring
+# MIT License Example:
+# [header]
+# template = """
+# File: {filename}
+# Author: {author} <{email}>
+# 
+# Copyright (c) {year} {copyright_holder}
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# """
+
+# Mozilla Public License (MPL-2.0) Example:
+# [header]
+# template = """
+# File: {filename}
+# 
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+# """
+
+# Apache License 2.0 Example:
+# [header]
+# template = """
+# File: {filename}
+# 
+# Copyright {year} {copyright_holder}
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# """
+
+# ============================================================================
+# CUSTOM TEMPLATES (Optional - Override defaults)
+# ============================================================================
+# You can override the default template for specific file extensions.
+# The extension automatically wraps it with the correct format for each language.
+#
+# Example: Simplified Python template (auto-wrapped with """ """)
 # [header.by_extension.py]
-# template = """#!/usr/bin/env python3
-# # -*- coding: utf-8 -*-
-# \"\"\"
+# template = """
 # {filename} - Brief description
 # 
 # Author: {author} <{email}>
@@ -70,42 +119,36 @@ template = """/*
 # 
 # Copyright (c) {year} {copyright_holder}
 # Licensed under MIT License
-# \"\"\"
-# 
 # """
 
-# Example: Custom Rust template with rustdoc format
+# Example: Simplified Rust template (auto-wrapped with /* */)
 # [header.by_extension.rs]
-# template = """//! {filename}
-# //!
-# //! Author: {author}
-# //! Date: {date}
-# 
+# template = """
+# {filename}
+#
+# Author: {author}
+# Date: {date}
 # """
 
-# Example: Custom shell script with usage info
+# Example: Shell script with shebang (auto-detected interpreter + # comments)
 # [header.by_extension.sh]
-# template = """#!/usr/bin/env bash
-# #
-# # {filename} - Brief description
-# # 
-# # Usage: {filename} [options]
-# #
-# # Author: {author}
-# # Date: {date}
-# #
+# template = """
+# {filename} - Brief description
 # 
-# set -euo pipefail
-# 
+# Usage: {filename} [options]
+#
+# Author: {author}
+# Date: {date}
 # """
 
-# Example: Custom JavaScript/TypeScript with JSDoc
+# Example: JavaScript with minimal header
 # [header.by_extension.js]
-# template = """/**
-#  * @file {filename}
-#  * @author {author} <{email}>
-#  * @date {date}
-#  * @copyright {year} {copyright_holder}
-#  */
-# 
+# template = """
+# @file {filename}
+# @author {author} <{email}>
+# @date {date}
 # """
+
+# Note: Comment wrapping is automatic and cannot be disabled.
+# If you need exact control, include the comment syntax in your template
+# (though this is not recommended as it reduces portability).

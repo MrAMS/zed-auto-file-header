@@ -6,6 +6,147 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
 
+/// Comment style for different programming languages
+#[derive(Debug, Clone)]
+enum CommentStyle {
+    /// Block comment style with start and end markers (e.g., /* ... */)
+    Block { start: &'static str, end: &'static str, line_prefix: &'static str },
+    /// Line comment style with a prefix (e.g., # or //)
+    Line { prefix: &'static str },
+    /// Line comment with optional shebang
+    LineWithShebang { prefix: &'static str, shebang: &'static str },
+    /// Python style with encoding declaration and docstring
+    PythonDoc,
+    /// HTML/XML style
+    HtmlComment,
+}
+
+impl CommentStyle {
+    /// Get the comment style for a file extension
+    fn for_extension(ext: &str) -> Self {
+        match ext {
+            // C-style languages
+            "c" | "h" | "cpp" | "hpp" | "cc" | "hh" | "cxx" | "hxx" => 
+                Self::Block { start: "/*", end: "*/", line_prefix: " *" },
+            "cs" | "java" | "js" | "jsx" | "ts" | "tsx" | "rs" | "scala" | 
+            "kt" | "kts" | "swift" | "go" | "m" | "mm" => 
+                Self::Block { start: "/*", end: "*/", line_prefix: " *" },
+            "css" | "scss" | "sass" | "less" => 
+                Self::Block { start: "/*", end: "*/", line_prefix: " *" },
+            
+            // Python
+            "py" | "pyw" | "pyx" => Self::PythonDoc,
+            
+            // Shell scripts
+            "sh" | "bash" | "zsh" => Self::LineWithShebang { prefix: "#", shebang: "#!/usr/bin/env bash" },
+            "fish" => Self::LineWithShebang { prefix: "#", shebang: "#!/usr/bin/env fish" },
+            
+            // Other scripting languages with shebang
+            "rb" => Self::LineWithShebang { prefix: "#", shebang: "#!/usr/bin/env ruby" },
+            "pl" | "pm" => Self::LineWithShebang { prefix: "#", shebang: "#!/usr/bin/env perl" },
+            "r" | "R" => Self::LineWithShebang { prefix: "#", shebang: "#!/usr/bin/env Rscript" },
+            "jl" => Self::LineWithShebang { prefix: "#", shebang: "#!/usr/bin/env julia" },
+            
+            // Simple line comments
+            "yaml" | "yml" | "toml" | "ini" | "conf" | "cfg" => Self::Line { prefix: "#" },
+            
+            // HTML/XML
+            "html" | "htm" | "xml" | "svg" | "xhtml" => Self::HtmlComment,
+            
+            // SQL
+            "sql" => Self::Line { prefix: "--" },
+            
+            // Lua/Haskell
+            "lua" | "hs" | "lhs" => Self::Block { start: "--[[", end: "--]]", line_prefix: "" },
+            
+            // Lisp family
+            "lisp" | "cl" | "scm" | "clj" | "cljs" => Self::Line { prefix: ";;;;" },
+            
+            // Erlang/Elixir
+            "erl" | "hrl" | "ex" | "exs" => Self::Line { prefix: "%%" },
+            
+            // Vim
+            "vim" => Self::Line { prefix: "\"" },
+            
+            // Verilog and SystemVerilog
+            "v" | "vh" | "sv" | "svh" => Self::Line { prefix: "//" },
+            
+            // Tcl
+            "tcl" => Self::Line { prefix: "#" },
+            
+            // Default: line comment with #
+            _ => Self::Line { prefix: "#" },
+        }
+    }
+    
+    /// Wrap content with this comment style
+    fn wrap(&self, content: &str) -> String {
+        match self {
+            Self::Block { start, end, line_prefix } => {
+                let mut result = format!("{}\n", start);
+                for line in content.lines() {
+                    if line.trim().is_empty() {
+                        if !line_prefix.is_empty() {
+                            result.push_str(line_prefix);
+                        }
+                        result.push('\n');
+                    } else {
+                        if !line_prefix.is_empty() {
+                            result.push_str(line_prefix);
+                            result.push(' ');
+                        }
+                        result.push_str(line);
+                        result.push('\n');
+                    }
+                }
+                result.push_str(&format!(" {}\n\n", end));
+                result
+            },
+            Self::Line { prefix } => {
+                let mut result = String::new();
+                for line in content.lines() {
+                    result.push_str(prefix);
+                    if !line.trim().is_empty() {
+                        result.push(' ');
+                        result.push_str(line);
+                    }
+                    result.push('\n');
+                }
+                result.push('\n');
+                result
+            },
+            Self::LineWithShebang { prefix, shebang } => {
+                let mut result = format!("{}\n{}\n", shebang, prefix);
+                for line in content.lines() {
+                    result.push_str(prefix);
+                    if !line.trim().is_empty() {
+                        result.push(' ');
+                        result.push_str(line);
+                    }
+                    result.push('\n');
+                }
+                result.push_str(&format!("{}\n\n", prefix));
+                result
+            },
+            Self::PythonDoc => {
+                format!("# -*- coding: utf-8 -*-\n\"\"\"\n{}\n\"\"\"\n\n", content)
+            },
+            Self::HtmlComment => {
+                let mut result = String::from("<!--\n");
+                for line in content.lines() {
+                    if !line.trim().is_empty() {
+                        result.push_str("  ");
+                        result.push_str(line);
+                    }
+                    result.push('\n');
+                }
+                result.push_str("-->\n\n");
+                result
+            },
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct AuthorConfig {
     name: String,
@@ -50,14 +191,10 @@ impl Default for Config {
                 copyright_holder: String::new(),
             },
             header: HeaderConfig {
-                template: r#"/*
- * File: {filename}
- * Author: {author}
- * Date: {date}
- * Copyright (c) {year} {copyright_holder}
- */
-
-"#.to_string(),
+                template: r#"File: {filename}
+Author: {author}
+Date: {date}
+Copyright (c) {year} {copyright_holder}"#.to_string(),
                 by_extension: HashMap::new(),
             },
         }
@@ -136,192 +273,18 @@ impl Config {
             .and_then(|e| e.to_str())
             .unwrap_or("");
 
+        // Get the comment style for this file type
+        let comment_style = CommentStyle::for_extension(ext);
+
         // Priority 1: Check if user has custom template for this specific extension
         if let Some(ext_config) = self.header.by_extension.get(ext) {
-            return ext_config.template.clone();
+            // Wrap user's extension-specific template with appropriate comment syntax
+            return comment_style.wrap(&ext_config.template);
         }
 
         // Priority 2: Use user's default template from [header] section
-        // Only use built-in templates if user hasn't specified a default template
-        // (i.e., if they're using the hardcoded default template)
-        if self.header.template != Config::default().header.template {
-            return self.header.template.clone();
-        }
-
-        // Priority 3: Use built-in language-specific templates as fallback
-        let builtin_template = Self::get_builtin_template(ext);
-        if !builtin_template.is_empty() {
-            return builtin_template;
-        }
-        
-        // Priority 4: Fall back to default template
-        self.header.template.clone()
-    }
-
-    fn get_builtin_template(ext: &str) -> String {
-        match ext {
-            // C/C++/C#/Java/JavaScript/TypeScript/Rust/Scala/Kotlin/Swift/Go
-            "c" | "h" | "cpp" | "hpp" | "cc" | "hh" | "cxx" | "hxx" | 
-            "cs" | "java" | "js" | "jsx" | "ts" | "tsx" | 
-            "rs" | "scala" | "kt" | "kts" | "swift" | "go" | "m" | "mm" => {
-                r#"/*
- * File: {filename}
- * Project: {project}
- * Author: {author} <{email}>
- * Created: {date} {time}
- * 
- * Copyright (c) {year} {copyright_holder}
- * All rights reserved.
- */
-
-"#.to_string()
-            },
-            
-            // Python
-            "py" | "pyw" | "pyx" => {
-                r#"# -*- coding: utf-8 -*-
-"""
-File: {filename}
-Project: {project}
-Author: {author} <{email}>
-Created: {date} {time}
-
-Copyright (c) {year} {copyright_holder}
-All rights reserved.
-"""
-
-"#.to_string()
-            },
-            
-            // Ruby/Perl/Shell/Bash/Zsh/Fish/R/Julia
-            "rb" | "pl" | "pm" | "sh" | "bash" | "zsh" | "fish" | "r" | "R" | "jl" => {
-                r#"#!/usr/bin/env {interpreter}
-#
-# File: {filename}
-# Project: {project}
-# Author: {author} <{email}>
-# Created: {date} {time}
-#
-# Copyright (c) {year} {copyright_holder}
-# All rights reserved.
-#
-
-"#.to_string()
-            },
-            
-            // HTML/XML/SVG
-            "html" | "htm" | "xml" | "svg" | "xhtml" => {
-                r#"<!--
-  File: {filename}
-  Project: {project}
-  Author: {author} <{email}>
-  Created: {date} {time}
-  
-  Copyright (c) {year} {copyright_holder}
-  All rights reserved.
--->
-
-"#.to_string()
-            },
-            
-            // CSS/SCSS/SASS/LESS
-            "css" | "scss" | "sass" | "less" => {
-                r#"/**
- * File: {filename}
- * Project: {project}
- * Author: {author} <{email}>
- * Created: {date} {time}
- * 
- * Copyright (c) {year} {copyright_holder}
- * All rights reserved.
- */
-
-"#.to_string()
-            },
-            
-            // SQL
-            "sql" => {
-                r#"-- File: {filename}
--- Project: {project}
--- Author: {author} <{email}>
--- Created: {date} {time}
---
--- Copyright (c) {year} {copyright_holder}
--- All rights reserved.
-
-"#.to_string()
-            },
-            
-            // YAML
-            "yaml" | "yml" => {
-                r#"# File: {filename}
-# Project: {project}
-# Author: {author} <{email}>
-# Created: {date} {time}
-#
-# Copyright (c) {year} {copyright_holder}
-# All rights reserved.
-
-"#.to_string()
-            },
-            
-            // Lua/Haskell
-            "lua" | "hs" | "lhs" => {
-                r#"--[[
-  File: {filename}
-  Project: {project}
-  Author: {author} <{email}>
-  Created: {date} {time}
-  
-  Copyright (c) {year} {copyright_holder}
-  All rights reserved.
---]]
-
-"#.to_string()
-            },
-            
-            // Lisp/Scheme/Clojure
-            "lisp" | "cl" | "scm" | "clj" | "cljs" => {
-                r#";;;; File: {filename}
-;;;; Project: {project}
-;;;; Author: {author} <{email}>
-;;;; Created: {date} {time}
-;;;;
-;;;; Copyright (c) {year} {copyright_holder}
-;;;; All rights reserved.
-
-"#.to_string()
-            },
-            
-            // Erlang/Elixir
-            "erl" | "hrl" | "ex" | "exs" => {
-                r#"%% File: {filename}
-%% Project: {project}
-%% Author: {author} <{email}>
-%% Created: {date} {time}
-%%
-%% Copyright (c) {year} {copyright_holder}
-%% All rights reserved.
-
-"#.to_string()
-            },
-            
-            // Vim script
-            "vim" => {
-                r#"" File: {filename}
-" Project: {project}
-" Author: {author} <{email}>
-" Created: {date} {time}
-"
-" Copyright (c) {year} {copyright_holder}
-" All rights reserved.
-
-"#.to_string()
-            },
-            
-            // No built-in template
-            _ => String::new(),
-        }
+        // Always wrap with appropriate comment syntax
+        comment_style.wrap(&self.header.template)
     }
 }
 
@@ -526,6 +489,6 @@ async fn main() {
     let stdin = tokio::io::stdin();
     let stdout = tokio::io::stdout();
 
-    let (service, socket) = LspService::new(|client| AutoHeaderServer::new(client));
+    let (service, socket) = LspService::new(AutoHeaderServer::new);
     Server::new(stdin, stdout, socket).serve(service).await;
 }

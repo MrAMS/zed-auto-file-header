@@ -27,27 +27,19 @@ On first use, the extension automatically downloads the appropriate pre-built bi
 
 ## 📋 Supported Languages
 
-The extension automatically recognizes and applies appropriate comment styles for **30+ languages**:
+The extension automatically recognizes and applies appropriate comment styles for **35+ languages**:
 
-### Block Comment Languages
-C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala, Objective-C
+- **C-Style**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala
+- **Scripts**: Python, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl
+- **Hardware**: Verilog, SystemVerilog
+- **Markup**: HTML, XML, SVG
+- **Styles**: CSS, SCSS, SASS, LESS
+- **Database**: SQL
+- **Config**: YAML, TOML, INI
+- **Functional**: Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir
+- **Editor**: Vim script
 
-### Script Languages (with shebang support)
-Python, Shell (Bash, Zsh, Fish), Ruby, Perl, R, Julia
-
-### Markup Languages
-HTML, XML, SVG
-
-### Style Languages
-CSS, SCSS, SASS, LESS
-
-### Database & Config Languages
-SQL, YAML
-
-### Functional & Other Languages
-Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir, Vim script
-
-For detailed templates of each language, see [LANGUAGES.md](LANGUAGES.md).
+📖 **See [LANGUAGES.md](LANGUAGES.md) for complete details and examples.**
 
 ## ⚙️ Configuration
 
@@ -90,19 +82,32 @@ name = "My Project"
 copyright_holder = "Your Company"  # Optional, defaults to author name
 
 [header]
+# The [header] section is OPTIONAL - if omitted, a default template will be used
+# Write your template content WITHOUT comment markers!
+# The extension automatically wraps it with the correct format for each language.
 template = """
-/*
- * File: {filename}
- * Project: {project}
- * Author: {author} <{email}>
- * Created: {date} {time}
- *
- * Copyright (c) {year} {copyright_holder}
- * All rights reserved.
- */
+File: {filename}
+Project: {project}
+Author: {author} <{email}>
+Created: {date} {time}
 
+Copyright (c) {year} {copyright_holder}
+All rights reserved.
 """
 ```
+
+**✨ Automatic Comment Wrapping**: Simply write your template content **once** without any comment syntax. The extension intelligently wraps it with the correct format for each language:
+- **C/Rust/Java/JavaScript**: `/* ... */`
+- **Python**: `""" ... """` (with UTF-8 encoding header)
+- **Shell scripts**: `#` (with automatic shebang like `#!/usr/bin/env bash`)
+- **HTML**: `<!-- ... -->`
+- **SQL**: `--`
+- **Lua**: `--[[ ... ]]`
+- **Verilog/SystemVerilog**: `//`
+- **Tcl**: `#`
+- And 35+ more languages!
+
+**💡 This makes your config portable and clean** - write once, works everywhere!
 
 ### Template Variables
 
@@ -119,6 +124,69 @@ template = """
 | `{copyright_holder}` | Copyright holder (defaults to author) | `Your Company` |
 | `{interpreter}` | Script interpreter (for shebang) | `python3`, `bash`, etc. |
 
+### Open Source License Support
+
+You can easily customize the template to include open source licenses:
+
+**MIT License Example**:
+```toml
+[header]
+template = """
+File: {filename}
+Author: {author} <{email}>
+Date: {date}
+
+Copyright (c) {year} {copyright_holder}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+"""
+```
+
+**Mozilla Public License (MPL-2.0) Example**:
+```toml
+[header]
+template = """
+File: {filename}
+Author: {author}
+
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at https://mozilla.org/MPL/2.0/.
+"""
+```
+
+**Apache License 2.0 Example**:
+```toml
+[header]
+template = """
+File: {filename}
+
+Copyright {year} {copyright_holder}
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+"""
+```
+
 ### Per-Language Template Override
 
 You can override the default template for specific file extensions:
@@ -126,16 +194,12 @@ You can override the default template for specific file extensions:
 ```toml
 [header.by_extension.py]
 template = """
-# -*- coding: utf-8 -*-
-\"\"\"
 File: {filename}
 Project: {project}
 Author: {author} <{email}>
 Created: {date} {time}
 
 Copyright (c) {year} {copyright_holder}
-\"\"\"
-
 """
 
 [header.by_extension.sh]

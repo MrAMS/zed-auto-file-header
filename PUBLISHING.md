@@ -1,185 +1,89 @@
-# Publishing to Zed Extensions Registry
+# Publishing Guide
 
-## Zero Dependencies Architecture
+## Architecture
 
-This extension uses a **zero-dependency** approach:
+This extension uses a **zero-dependency** approach - pre-built binaries are automatically downloaded from GitHub Releases.
 
-✅ **No Rust Required**: Users don't need to install Rust or any build tools  
-✅ **Pre-built Binaries**: Cross-platform binaries automatically built via GitHub Actions  
-✅ **Auto-Download**: Extension downloads appropriate binary from GitHub Releases  
-✅ **Instant Startup**: No compilation delay - downloads in seconds  
+**Supported Platforms:**
+- Linux: x86_64, ARM64 (aarch64)
+- macOS: Intel (x86_64), Apple Silicon (ARM64)
+- Windows: x86_64
 
-### Supported Platforms
+## Release Process
 
-- Linux x86_64
-- Linux ARM64 (aarch64)
-- macOS Intel (x86_64)
-- macOS Apple Silicon (ARM64)
-- Windows x86_64
+### 1. Update Version
 
-## Prerequisites
-
-- ✅ LICENSE file (MIT) - **Required since Oct 1, 2025**
-- ✅ Valid `extension.toml` with required fields
-- ✅ GitHub repository with automated releases
-- ✅ Cross-platform binaries published to GitHub Releases
-
-## Release Workflow
-
-### 1. Create GitHub Release
-
-Tag a version to trigger automated builds:
-
-```bash
-git tag v0.2.0
-git push origin v0.2.0
+Update version in `extension.toml`:
+```toml
+version = "0.2.3"
 ```
 
+### 2. Update CHANGELOG.md
+
+Document all changes in `CHANGELOG.md`.
+
+### 3. Create Git Tag
+
+```bash
+git tag v0.2.3
+git push origin v0.2.3
+```
+
+### 4. Automated Build
+
 GitHub Actions (`.github/workflows/release.yml`) automatically:
-- Builds LSP server for all platforms
-- Creates compressed archives:
-  - `x86_64-unknown-linux-gnu.tar.gz`
-  - `aarch64-unknown-linux-gnu.tar.gz`
-  - `x86_64-apple-darwin.tar.gz`
-  - `aarch64-apple-darwin.tar.gz`
-  - `x86_64-pc-windows-msvc.zip`
-- Publishes them as release assets
+- Builds LSP server for all 5 platforms
+- Creates release with binary assets
+- Publishes to GitHub Releases
 
-### 2. Submit to zed-industries/extensions
+### 5. Submit to Zed Extensions
 
-1. Fork `https://github.com/zed-industries/extensions`
+1. Fork: https://github.com/zed-industries/extensions
+2. Add/update your extension in the fork
+3. Create pull request
+4. Wait for review and merge
 
-2. Add your extension to `extensions.toml`:
-   ```toml
-   [auto-header]
-   submodule = "extensions/auto-header"
-   path = "extension"  # Required - extension in subdirectory
-   version = "0.2.0"
-   ```
+## Binary Download Flow
 
-3. Add git submodule:
-   ```bash
-   git submodule add https://github.com/MrAMS/zed-auto-file-header.git extensions/auto-header
-   cd extensions/auto-header
-   git checkout v0.2.0
-   cd ../..
-   git add extensions.toml .gitmodules extensions/auto-header
-   git commit -m "Add Auto File Header extension v0.2.0"
-   ```
+The extension (`extension/src/lib.rs`) handles binary downloads:
 
-4. Create Pull Request with:
-   ```markdown
-   # Add Auto File Header Extension
-   
-   Automatically inserts customizable file headers when creating new files.
-   
-   ## Features
-   - Zero dependencies (downloads pre-built binaries)
-   - Supports 35+ languages
-   - Customizable templates via TOML config
-   - Cross-platform (Linux, macOS, Windows)
-   - Multi-workspace support
-   
-   ## Technical Details
-   - Uses LSP protocol for header insertion
-   - Auto-downloads platform-specific binary from GitHub Releases
-   - Config file: `.auto-header.toml` (project/global)
-   
-   ## Testing
-   - ✅ Tested on Linux x86_64
-   - ✅ Tested on macOS ARM64
-   - ✅ Tested on Windows x86_64
-   - ✅ Zero-dependency installation verified
-   
-   Repository: https://github.com/MrAMS/zed-auto-file-header
-   License: MIT
-   ```
+```rust
+fn language_server_binary_path(...) -> Result<String> {
+    // 1. Check if binary already exists
+    // 2. If not, fetch latest release from GitHub
+    // 3. Download appropriate binary for platform
+    // 4. Extract and make executable
+    // 5. Return path to binary
+}
+```
 
-## How Extension Works for End Users
+Users see download progress in Zed's status bar.
 
-1. **User installs** from Zed extensions panel
-2. **First launch**: Extension calls `language_server_command()`
-3. **Auto-download**:
-   - Detects platform (Linux/macOS/Windows) and architecture
-   - Fetches latest release from GitHub API
-   - Downloads appropriate binary (e.g., `x86_64-unknown-linux-gnu.tar.gz`)
-   - Extracts to extension work directory
-   - Sets executable permissions (Unix)
-   - Caches path for subsequent launches
-4. **Subsequent launches**: Uses cached binary path (instant startup)
-
-## Update Process
-
-To publish a new version:
-
-1. Update version in `extension/extension.toml`
-2. Update CHANGELOG.md
-3. Commit and tag:
-   ```bash
-   git commit -am "Release v0.3.0"
-   git tag v0.3.0
-   git push origin master v0.3.0
-   ```
-4. GitHub Actions builds and publishes binaries
-5. Update zed-industries/extensions:
-   ```bash
-   cd extensions/auto-header
-   git fetch
-   git checkout v0.3.0
-   cd ../..
-   # Update version in extensions.toml
-   sed -i 's/version = "0.2.0"/version = "0.3.0"/' extensions.toml
-   git add extensions/auto-header extensions.toml
-   git commit -m "Update Auto File Header to v0.3.0"
-   ```
-
-## Project Structure
+## Files Overview
 
 ```
 zed-auto-file-header/
-├── .github/
-│   └── workflows/
-│       └── release.yml          ← Auto-build workflow
-├── LICENSE                       ← MIT license (required)
+├── .github/workflows/release.yml   # Automated cross-platform builds
 ├── extension/
-│   ├── extension.toml            ← Manifest (version, metadata)
-│   ├── Cargo.toml                ← Wasm extension build
-│   └── src/lib.rs                ← Auto-download logic
-└── server/
-    ├── Cargo.toml                ← LSP server build
-    └── src/main.rs               ← Header insertion logic
+│   ├── extension.toml             # Extension metadata & version
+│   └── src/lib.rs                 # Binary download logic
+├── server/
+│   └── src/main.rs                # LSP server (header insertion)
+├── LICENSE                        # MIT (required)
+├── README.md                      # User documentation
+└── CHANGELOG.md                   # Version history
 ```
 
-## Verification Checklist
+## Testing Checklist
 
-Before submitting PR to zed-industries/extensions:
+Before release:
 
-- [ ] GitHub release published with all platform binaries
-- [ ] `extension.toml` version matches git tag
-- [ ] LICENSE file present (MIT)
-- [ ] README.md complete with usage examples
-- [ ] Extension tested on at least 2 platforms
-- [ ] Config file (`.auto-header.toml`) documented
-- [ ] Binary download works for all platforms
+- [ ] All platforms build successfully
+- [ ] Binary download works on Linux/macOS/Windows
+- [ ] Headers insert correctly for all supported languages
+- [ ] Config file changes reload without restart
 - [ ] No Rust dependency required for end users
-
-## Technical Implementation
-
-### Extension Code (extension/src/lib.rs)
-
-Uses Zed Extension API:
-- `latest_github_release()` - Fetches release metadata
-- `download_file()` - Downloads and extracts binary
-- `make_file_executable()` - Sets Unix permissions
-- `current_platform()` - Detects OS and architecture
-
-### GitHub Actions Workflow
-
-Cross-compiles for all platforms:
-- Linux: Uses `cross` or native builds
-- macOS: Uses `x86_64-apple-darwin` and `aarch64-apple-darwin` targets
-- Windows: Uses `x86_64-pc-windows-msvc` target
-- Creates platform-specific archives
+- [ ] Documentation is up-to-date
 - Uploads to GitHub Release
 
 ### Binary Size

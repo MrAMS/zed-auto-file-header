@@ -1,5 +1,62 @@
 # Changelog
 
+## Version 0.2.3 - 2024-12-04
+
+### ✨ New Features
+
+- **Automatic Comment Wrapping**: Revolutionary architecture that eliminates code duplication and configuration complexity!
+  - **No configuration needed** - comment wrapping is always automatic
+  - Write template content **once** without any comment markers
+  - Extension intelligently wraps with language-appropriate syntax:
+    - C/Rust/Java/JavaScript/Go: `/* ... */`
+    - Python: `""" ... """` with UTF-8 encoding header
+    - Shell scripts: `#` with automatic shebang detection
+    - HTML/XML: `<!-- ... -->`
+    - SQL: `--`, Lua/Haskell: `--[[ ... ]]`
+    - Verilog/SystemVerilog: `//`
+    - Tcl: `#`
+    - Lisp: `;;;;`, Erlang: `%%`, Vim: `"`
+    - And 35+ more languages!
+
+- **Expanded Language Support**:
+  - Added Verilog (`.v`, `.vh`)
+  - Added SystemVerilog (`.sv`, `.svh`)
+  - Added Tcl (`.tcl`)
+
+- **Optional Configuration**: The `[header]` section is now optional
+  - If omitted, a sensible default template will be used
+  - Users can start with minimal configuration (just `[author]` and `[project]`)
+
+- **Open Source License Examples**: Added documentation and examples for:
+  - MIT License
+  - Mozilla Public License (MPL-2.0)
+  - Apache License 2.0
+  - Easy to customize for other licenses
+
+### 🏗️ Code Architecture
+
+- **Major Refactoring**: Eliminated hundreds of lines of duplicated template code
+  - Created `CommentStyle` enum to abstract comment format rules
+  - Single source of truth for each language's comment syntax
+  - Removed redundant `get_builtin_template()` method (300+ lines)
+  - Removed redundant `wrap_with_comment_style()` method (150+ lines)
+  - Simplified `get_template_for_file()` to just 15 lines
+  - **Result**: Cleaner, more maintainable codebase
+
+### 🗑️ Breaking Changes
+
+- **Removed `use_builtin_comment_style` option**: Comment wrapping is now always enabled
+  - This simplifies the configuration and eliminates user confusion
+  - The feature is so useful that there's no reason to disable it
+  - Users who need exact comment control can still include syntax in their template
+
+### 📚 Documentation
+
+- Updated all configuration examples to reflect simpler design
+- Removed references to `use_builtin_comment_style` option
+- Clarified that comment wrapping is automatic and always-on
+- Improved README with clearer explanation of the wrapping feature
+
 ## Version 0.2.2 - 2025-11-24
 
 ### 🎨 User Experience

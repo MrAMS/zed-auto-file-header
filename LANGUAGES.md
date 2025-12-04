@@ -1,26 +1,50 @@
 # Language Support
 
-The Auto Header extension includes built-in templates for 30+ programming languages and file types. The appropriate comment format is automatically selected based on the file extension.
+The Auto Header extension automatically wraps your template content with the appropriate comment format for **35+ programming languages**. Simply write your template once, and the extension handles the rest!
+
+## How It Works
+
+You write **plain content** in your `.auto-header.toml`:
+
+```toml
+[header]
+template = """
+File: {filename}
+Author: {author}
+Date: {date}
+"""
+```
+
+The extension automatically wraps it with the correct comment syntax for each language:
 
 ## Supported Languages
 
-### C-Style Comments (`/* ... */`)
+### C-Style Block Comments (`/* ... */`)
 
-**Languages**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Scala, Kotlin, Swift, Go, Objective-C
+**Languages**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Scala, Kotlin, Swift, Go, Objective-C, CSS, SCSS, SASS, LESS
 
-**Extensions**: `.c`, `.h`, `.cpp`, `.hpp`, `.cc`, `.hh`, `.cxx`, `.hxx`, `.cs`, `.java`, `.js`, `.jsx`, `.ts`, `.tsx`, `.rs`, `.scala`, `.kt`, `.kts`, `.swift`, `.go`, `.m`, `.mm`
+**Extensions**: `.c`, `.h`, `.cpp`, `.hpp`, `.cc`, `.hh`, `.cxx`, `.hxx`, `.cs`, `.java`, `.js`, `.jsx`, `.ts`, `.tsx`, `.rs`, `.scala`, `.kt`, `.kts`, `.swift`, `.go`, `.m`, `.mm`, `.css`, `.scss`, `.sass`, `.less`
 
-**Example**:
+**Auto-generated Format**:
 ```c
 /*
- * File: main.cpp
- * Project: My Project
- * Author: John Doe <john@example.com>
- * Created: 2025-11-23 19:30:00
- * 
- * Copyright (c) 2025 John Doe
- * All rights reserved.
+ * File: {filename}
+ * Author: {author}
+ * Date: {date}
  */
+```
+
+### C++ Style Line Comments (`//`)
+
+**Languages**: Verilog, SystemVerilog
+
+**Extensions**: `.v`, `.vh`, `.sv`, `.svh`
+
+**Auto-generated Format**:
+```verilog
+// File: {filename}
+// Author: {author}
+// Date: {date}
 ```
 
 ### Python Docstring
@@ -29,25 +53,60 @@ The Auto Header extension includes built-in templates for 30+ programming langua
 
 **Extensions**: `.py`, `.pyw`, `.pyx`
 
-**Example**:
+**Auto-generated Format**:
 ```python
 # -*- coding: utf-8 -*-
 """
-File: script.py
-Project: My Project
-Author: John Doe <john@example.com>
-Created: 2025-11-23 19:30:00
-
-Copyright (c) 2025 John Doe
-All rights reserved.
+File: {filename}
+Author: {author}
+Date: {date}
 """
 ```
 
-### Shell Script (with Shebang)
+### Shell Script (Hash Comments with Shebang)
 
-**Languages**: Bash, Zsh, Fish, Perl, Ruby, R, Julia
+**Languages**: Bash, Zsh, Fish
 
-**Extensions**: `.sh`, `.bash`, `.zsh`, `.fish`, `.rb`, `.pl`, `.pm`, `.r`, `.R`, `.jl`
+**Extensions**: `.sh`, `.bash`, `.zsh`, `.fish`
+
+**Auto-generated Format**:
+```bash
+#!/usr/bin/env bash
+#
+# File: {filename}
+# Author: {author}
+# Date: {date}
+#
+```
+
+### Scripting Languages with Shebang
+
+**Languages**: Ruby, Perl, R, Julia
+
+**Extensions**: `.rb`, `.pl`, `.pm`, `.r`, `.R`, `.jl`
+
+**Auto-generated Format**:
+```ruby
+#!/usr/bin/env ruby
+#
+# File: {filename}
+# Author: {author}
+# Date: {date}
+#
+```
+
+### Hash Comments (No Shebang)
+
+**Languages**: YAML, TOML, Tcl, INI, Config files
+
+**Extensions**: `.yaml`, `.yml`, `.toml`, `.ini`, `.conf`, `.cfg`, `.tcl`
+
+**Auto-generated Format**:
+```yaml
+# File: {filename}
+# Author: {author}
+# Date: {date}
+```
 
 **Example**:
 ```bash
@@ -69,36 +128,13 @@ All rights reserved.
 
 **Extensions**: `.html`, `.htm`, `.xml`, `.svg`, `.xhtml`
 
-**Example**:
+**Auto-generated Format**:
 ```html
 <!--
-  File: index.html
-  Project: My Project
-  Author: John Doe <john@example.com>
-  Created: 2025-11-23 19:30:00
-  
-  Copyright (c) 2025 John Doe
-  All rights reserved.
+  File: {filename}
+  Author: {author}
+  Date: {date}
 -->
-```
-
-### CSS Block Comments
-
-**Languages**: CSS, SCSS, SASS, LESS
-
-**Extensions**: `.css`, `.scss`, `.sass`, `.less`
-
-**Example**:
-```css
-/**
- * File: styles.css
- * Project: My Project
- * Author: John Doe <john@example.com>
- * Created: 2025-11-23 19:30:00
- * 
- * Copyright (c) 2025 John Doe
- * All rights reserved.
- */
 ```
 
 ### SQL Line Comments
@@ -107,32 +143,11 @@ All rights reserved.
 
 **Extensions**: `.sql`
 
-**Example**:
+**Auto-generated Format**:
 ```sql
--- File: schema.sql
--- Project: My Project
--- Author: John Doe <john@example.com>
--- Created: 2025-11-23 19:30:00
---
--- Copyright (c) 2025 John Doe
--- All rights reserved.
-```
-
-### YAML Hash Comments
-
-**Languages**: YAML
-
-**Extensions**: `.yaml`, `.yml`
-
-**Example**:
-```yaml
-# File: config.yaml
-# Project: My Project
-# Author: John Doe <john@example.com>
-# Created: 2025-11-23 19:30:00
-#
-# Copyright (c) 2025 John Doe
-# All rights reserved.
+-- File: {filename}
+-- Author: {author}
+-- Date: {date}
 ```
 
 ### Lua/Haskell Block Comments
@@ -141,16 +156,12 @@ All rights reserved.
 
 **Extensions**: `.lua`, `.hs`, `.lhs`
 
-**Example**:
+**Auto-generated Format**:
 ```lua
 --[[
-  File: script.lua
-  Project: My Project
-  Author: John Doe <john@example.com>
-  Created: 2025-11-23 19:30:00
-  
-  Copyright (c) 2025 John Doe
-  All rights reserved.
+  File: {filename}
+  Author: {author}
+  Date: {date}
 --]]
 ```
 
@@ -160,15 +171,11 @@ All rights reserved.
 
 **Extensions**: `.lisp`, `.cl`, `.scm`, `.clj`, `.cljs`
 
-**Example**:
+**Auto-generated Format**:
 ```lisp
-;;;; File: app.clj
-;;;; Project: My Project
-;;;; Author: John Doe <john@example.com>
-;;;; Created: 2025-11-23 19:30:00
-;;;;
-;;;; Copyright (c) 2025 John Doe
-;;;; All rights reserved.
+;;;; File: {filename}
+;;;; Author: {author}
+;;;; Date: {date}
 ```
 
 ### Erlang/Elixir Percent Comments
@@ -177,15 +184,11 @@ All rights reserved.
 
 **Extensions**: `.erl`, `.hrl`, `.ex`, `.exs`
 
-**Example**:
+**Auto-generated Format**:
 ```erlang
-%% File: server.erl
-%% Project: My Project
-%% Author: John Doe <john@example.com>
-%% Created: 2025-11-23 19:30:00
-%%
-%% Copyright (c) 2025 John Doe
-%% All rights reserved.
+%% File: {filename}
+%% Author: {author}
+%% Date: {date}
 ```
 
 ### Vim Script
@@ -194,38 +197,45 @@ All rights reserved.
 
 **Extensions**: `.vim`
 
-**Example**:
+**Auto-generated Format**:
 ```vim
-" File: config.vim
-" Project: My Project
-" Author: John Doe <john@example.com>
-" Created: 2025-11-23 19:30:00
-"
-" Copyright (c) 2025 John Doe
-" All rights reserved.
+" File: {filename}
+" Author: {author}
+" Date: {date}
 ```
+
+## Key Features
+
+✨ **Write Once, Run Everywhere**: Your template content works for all languages  
+🎯 **Automatic Format Detection**: Comment style chosen based on file extension  
+🔧 **Fully Customizable**: Override any language with custom templates  
+📦 **35+ Languages Supported**: From C to Verilog, Python to Vim script  
 
 ## Customization
 
-All built-in templates can be overridden by defining custom templates in your `.auto-header.toml` file. See the [README](README.md#overriding-built-in-templates) for details.
-
-## Adding Support for New Languages
-
-If you need support for a language not listed here, you can easily add it by defining a custom template in `.auto-header.toml`:
+You can override the automatic wrapping for specific languages:
 
 ```toml
-[header.by_extension.YOUR_EXT]
-template = """Your custom header template here
+[header.by_extension.py]
+template = """
+Custom Python header
+Add your own content here
 """
 ```
 
-For example, to add support for `.zig` files:
+The extension will still wrap it with Python's `""" """` format automatically.
 
-```toml
-[header.by_extension.zig]
-template = """//! File: {filename}
-//! Author: {author}
-//! Date: {date}
+## Complete Language List
 
-"""
-```
+| Category | Languages | Extensions |
+|----------|-----------|------------|
+| **C-Style** | C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala | `.c`, `.cpp`, `.cs`, `.java`, `.js`, `.ts`, `.rs`, `.go`, `.swift`, `.kt`, `.scala` |
+| **Line Comments** | Verilog, SystemVerilog | `.v`, `.vh`, `.sv`, `.svh` |
+| **Python** | Python | `.py`, `.pyw`, `.pyx` |
+| **Shell** | Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl | `.sh`, `.bash`, `.zsh`, `.fish`, `.rb`, `.pl`, `.r`, `.jl`, `.tcl` |
+| **Markup** | HTML, XML, SVG | `.html`, `.xml`, `.svg` |
+| **Style** | CSS, SCSS, SASS, LESS | `.css`, `.scss`, `.sass`, `.less` |
+| **Config** | YAML, TOML, INI | `.yaml`, `.yml`, `.toml`, `.ini` |
+| **Database** | SQL | `.sql` |
+| **Functional** | Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir | `.lua`, `.hs`, `.lisp`, `.scm`, `.clj`, `.erl`, `.ex` |
+| **Editor** | Vim script | `.vim` |

@@ -10,7 +10,7 @@
 
 - **🚀 零依赖**: 无需安装 Rust 或构建工具 - 自动下载预编译二进制文件
 - **🌍 跨平台**: 支持所有主流平台和架构
-- **⚡ 自动识别**: 识别 30+ 种编程语言并使用适当的注释风格
+- **⚡ 自动识别**: 识别 35+ 种编程语言并使用适当的注释风格
 - **🎨 完全可定制**: 定义全局或针对特定语言的模板
 - **🔄 动态配置**: 配置更改立即生效，无需重启
 - **📁 灵活配置位置**: 支持项目特定配置或用户全局配置
@@ -27,27 +27,19 @@
 
 ## 📋 支持的语言
 
-扩展自动识别并为 **30+ 种语言**应用适当的注释风格：
+扩展自动识别并为 **35+ 种语言**应用适当的注释风格：
 
-### 块注释语言
-C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala, Objective-C
+- **C 风格**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala
+- **脚本**: Python, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl
+- **硬件**: Verilog, SystemVerilog
+- **标记**: HTML, XML, SVG
+- **样式**: CSS, SCSS, SASS, LESS
+- **数据库**: SQL
+- **配置**: YAML, TOML, INI
+- **函数式**: Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir
+- **编辑器**: Vim script
 
-### 脚本语言（支持 shebang）
-Python, Shell (Bash, Zsh, Fish), Ruby, Perl, R, Julia
-
-### 标记语言
-HTML, XML, SVG
-
-### 样式语言
-CSS, SCSS, SASS, LESS
-
-### 数据库和配置语言
-SQL, YAML
-
-### 函数式和其他语言
-Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir, Vim script
-
-各语言的详细模板请参阅 [LANGUAGES.md](LANGUAGES.md)。
+📖 **完整详情和示例请参阅 [LANGUAGES.md](LANGUAGES.md)。**
 
 ## ⚙️ 配置
 
@@ -90,19 +82,32 @@ name = "我的项目"
 copyright_holder = "您的公司"  # 可选，默认使用作者名
 
 [header]
+# [header] 部分是可选的 - 如果省略，将使用默认模板
+# 只需编写内容，无需添加注释符号！
+# 扩展会自动为每种语言添加正确的注释格式
 template = """
-/*
- * 文件: {filename}
- * 项目: {project}
- * 作者: {author} <{email}>
- * 创建时间: {date} {time}
- *
- * Copyright (c) {year} {copyright_holder}
- * 保留所有权利
- */
+文件: {filename}
+项目: {project}
+作者: {author} <{email}>
+创建时间: {date} {time}
 
+Copyright (c) {year} {copyright_holder}
+保留所有权利
 """
 ```
+
+**✨ 自动注释包装**：只需编写模板内容**一次**，无需任何注释语法。扩展会智能地为每种语言添加正确的注释格式：
+- **C/Rust/Java/JavaScript**：`/* ... */`
+- **Python**：`""" ... """`（包含 UTF-8 编码声明）
+- **Shell 脚本**：`#`（包含自动添加的 shebang，如 `#!/usr/bin/env bash`）
+- **HTML**：`<!-- ... -->`
+- **SQL**：`--`
+- **Lua**：`--[[ ... ]]`
+- **Verilog/SystemVerilog**：`//`
+- **Tcl**：`#`
+- 以及 35+ 种其他语言！
+
+**💡 这让您的配置更简洁、更具可移植性** - 编写一次，处处适用！
 
 ### 模板变量
 
@@ -119,6 +124,63 @@ template = """
 | `{copyright_holder}` | 版权持有人（默认为作者） | `您的公司` |
 | `{interpreter}` | 脚本解释器（用于 shebang） | `python3`, `bash` 等 |
 
+### 开源许可证支持
+
+您可以轻松自定义模板以包含开源许可证：
+
+**MIT 许可证示例**:
+```toml
+[header]
+template = """
+文件: {filename}
+作者: {author} <{email}>
+日期: {date}
+
+Copyright (c) {year} {copyright_holder}
+
+特此免费授予任何获得本软件副本和相关文档文件（"软件"）的人不受限制地处置该软件的权利，
+包括不受限制地使用、复制、修改、合并、发布、分发、再许可和/或出售该软件副本，
+以及再授权被配发了本软件的人如上的权利，须在下列条件下：
+
+上述版权声明和本许可声明应包含在该软件的所有副本或实质成分中。
+
+本软件是"如此"提供的，没有任何形式的明示或暗示的保证，包括但不限于
+对适销性、特定用途的适用性和不侵权的保证。
+"""
+```
+
+**Mozilla 公共许可证 (MPL-2.0) 示例**:
+```toml
+[header]
+template = """
+文件: {filename}
+作者: {author}
+
+此源代码的使用受 Mozilla Public License v. 2.0 许可协议的约束
+如果未随此文件分发 MPL 许可证副本，您可以在以下网址获得：
+https://mozilla.org/MPL/2.0/
+"""
+```
+
+**Apache 许可证 2.0 示例**:
+```toml
+[header]
+template = """
+文件: {filename}
+
+Copyright {year} {copyright_holder}
+
+根据 Apache 许可证 2.0 版本（"许可证"）授权；
+除非遵守许可证，否则您不得使用此文件。
+您可以在以下网址获得许可证副本：
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+除非适用法律要求或书面同意，否则根据许可证分发的软件
+是按"原样"分发的，不附带任何明示或暗示的保证或条件。
+"""
+```
+
 ### 针对特定语言的模板覆盖
 
 可以为特定文件扩展名覆盖默认模板：
@@ -126,16 +188,12 @@ template = """
 ```toml
 [header.by_extension.py]
 template = """
-# -*- coding: utf-8 -*-
-\"\"\"
 文件: {filename}
 项目: {project}
 作者: {author} <{email}>
 创建时间: {date} {time}
 
 Copyright (c) {year} {copyright_holder}
-\"\"\"
-
 """
 
 [header.by_extension.sh]
