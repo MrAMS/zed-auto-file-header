@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 0.2.4 - 2024-12-04
+
+### 🐛 Bug Fixes
+
+- **Fixed Duplicate Header Insertion**: Resolved a critical issue where headers could be inserted twice when opening new files
+  - Removed stateful tracking mechanism that could fail in edge cases (file deletion, editor crash, etc.)
+  - Implemented stateless content-based detection for more reliable duplicate prevention
+  - Headers are now only inserted when files are truly empty, regardless of how many times `did_open` is triggered
+  - Properly handles scenarios where files are deleted and recreated with the same name
+
+### 🔧 Improvements
+
+- Simplified server architecture by removing unnecessary state management
+- Improved reliability and predictability of header insertion behavior
+
+---
+
 ## Version 0.2.3 - 2024-12-04
 
 ### ✨ New Features

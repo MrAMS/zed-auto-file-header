@@ -440,7 +440,9 @@ impl LanguageServer for AutoHeaderServer {
         // Only insert header if:
         // 1. File is completely empty
         // 2. A .auto-header.toml config file exists in search paths
-        if content.trim().is_empty() && Config::config_exists(workspace_root) {
+        let config_exists = Config::config_exists(workspace_root);
+        
+        if content.trim().is_empty() && config_exists {
             let header = self.generate_header(file_path_str, workspace_root);
             
             // Create a text edit to insert the header at the beginning

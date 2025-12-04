@@ -28,19 +28,45 @@ impl AutoHeaderExtension {
             "auto-header-server"
         };
 
-        // Check if binary exists in extension's work directory
-        let work_dir = worktree.root_path();
-        let work_dir_binary = std::path::Path::new(&work_dir).join(binary_name);
-        if work_dir_binary.exists() {
-            let path_str = work_dir_binary.to_string_lossy().to_string();
-            self.cached_binary_path = Some(path_str.clone());
-            return Ok(path_str);
-        }
-
-        // Check system PATH
-        if let Some(path) = worktree.which(binary_name) {
-            self.cached_binary_path = Some(path.clone());
-            return Ok(path);
+        // DEV MODE: Use local binary if AUTO_HEADER_DEV_MODE=local is set
+        // This allows testing with locally built server without publishing to GitHub
+        if std::env::var("AUTO_HEADER_DEV_MODE").as_deref() == Ok("local") {
+            // Check project root first (for dev extension)
+            let work_dir = worktree.root_path();
+            let root_binary = std::path::Path::new(&work_dir).join(binary_name);
+            if root_binary.exists() {
+                let path_str = root_binary.to_string_lossy().to_string();
+                self.cached_binary_path = Some(path_str.clone());
+                return Ok(path_str);
+            }
+            
+            // Check server/target/release/ (direct build location)
+            let server_binary = std::path::Path::new(&work_dir)
+                .join("server")
+                .join("target")
+                .join("release")
+                .join(binary_name);
+            if server_binary.exists() {
+                let path_str = server_binary.to_string_lossy().to_string();
+                self.cached_binary_path = Some(path_str.clone());
+                return Ok(path_str);
+            }
+            
+            // Check system PATH
+            if let Some(path) = worktree.which(binary_name) {
+                self.cached_binary_path = Some(path.clone());
+                return Ok(path);
+            }
+            
+            return Err(format!(
+                "AUTO_HEADER_DEV_MODE=local but binary not found. \n\
+                Searched locations:\n\
+                - {}/auto-header-server\n\
+                - {}/server/target/release/auto-header-server\n\
+                - System PATH\n\
+                Please build the server first: cd server && cargo build --release",
+                work_dir, work_dir
+            ));
         }
 
         // Download from GitHub Releases
