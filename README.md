@@ -27,16 +27,18 @@ On first use, the extension automatically downloads the appropriate pre-built bi
 
 ## 📋 Supported Languages
 
-The extension automatically recognizes and applies appropriate comment styles for **35+ languages**:
+The extension automatically recognizes and applies appropriate comment styles for **50+ languages**:
 
-- **C-Style**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala
-- **Scripts**: Python, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl
+- **C-Style**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala, Dart, Zig, D
+- **Scripts**: Python, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl, Nim, Crystal
 - **Hardware**: Verilog, SystemVerilog
 - **Markup**: HTML, XML, SVG
 - **Styles**: CSS, SCSS, SASS, LESS
 - **Database**: SQL
 - **Config**: YAML, TOML, INI
-- **Functional**: Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir
+- **Functional**: Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir, OCaml, F#, Racket, Gleam
+- **Document**: Typst, LaTeX, TeX, BibTeX
+- **Systems**: Odin
 - **Editor**: Vim script
 
 📖 **See [LANGUAGES.md](LANGUAGES.md) for complete details and examples.**

@@ -27,16 +27,18 @@
 
 ## 📋 支持的语言
 
-扩展自动识别并为 **35+ 种语言**应用适当的注释风格：
+扩展自动识别并为 **50+ 种语言**应用适当的注释风格：
 
-- **C 风格**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala
-- **脚本**: Python, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl
+- **C 风格**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala, Dart, Zig, D
+- **脚本**: Python, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl, Nim, Crystal
 - **硬件**: Verilog, SystemVerilog
 - **标记**: HTML, XML, SVG
 - **样式**: CSS, SCSS, SASS, LESS
 - **数据库**: SQL
 - **配置**: YAML, TOML, INI
-- **函数式**: Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir
+- **函数式**: Lua, Haskell, Lisp, Scheme, Clojure, Erlang, Elixir, OCaml, F#, Racket, Gleam
+- **文档**: Typst, LaTeX, TeX, BibTeX
+- **系统**: Odin
 - **编辑器**: Vim script
 
 📖 **完整详情和示例请参阅 [LANGUAGES.md](LANGUAGES.md)。**
