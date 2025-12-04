@@ -1,11 +1,12 @@
 # Build artifacts
 /target/
+server/target/
 **/*.rs.bk
 *.pdb
 
-# Cargo.lock for libraries (workspace is a library collection)
-# Uncomment if you want to track Cargo.lock:
-# Cargo.lock
+# Cargo.lock - ignore for both extension and server
+Cargo.lock
+server/Cargo.lock
 
 # IDE files
 .idea/
