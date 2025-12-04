@@ -399,7 +399,7 @@ impl LanguageServer for AutoHeaderServer {
 
     async fn initialized(&self, _: InitializedParams) {
         self.client
-            .log_message(MessageType::INFO, "Auto Header Server initialized")
+            .log_message(MessageType::INFO, "[Auto Header] Server initialized successfully")
             .await;
     }
 
@@ -410,6 +410,14 @@ impl LanguageServer for AutoHeaderServer {
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
         let uri = params.text_document.uri;
         let content = params.text_document.text;
+
+        // Log file opening
+        self.client
+            .log_message(
+                MessageType::INFO,
+                format!("[Auto Header] File opened: {}, length: {}", uri.path(), content.len()),
+            )
+            .await;
 
         // Convert URI to file path
         // Handle cross-platform URI paths:
@@ -442,11 +450,38 @@ impl LanguageServer for AutoHeaderServer {
         // 2. A .auto-header.toml config file exists in search paths
         let config_exists = Config::config_exists(workspace_root);
         
-        if content.trim().is_empty() && config_exists {
-            let header = self.generate_header(file_path_str, workspace_root);
-            
-            // Create a text edit to insert the header at the beginning
-            let edit = TextEdit {
+        if !content.trim().is_empty() {
+            self.client
+                .log_message(
+                    MessageType::INFO,
+                    format!("[Auto Header] Skipping non-empty file: {}", uri.path()),
+                )
+                .await;
+            return;
+        }
+        
+        if !config_exists {
+            self.client
+                .log_message(
+                    MessageType::INFO,
+                    format!("[Auto Header] No .auto-header.toml found, skipping: {}", uri.path()),
+                )
+                .await;
+            return;
+        }
+        
+        // Both conditions met, insert header
+        self.client
+            .log_message(
+                MessageType::INFO,
+                format!("[Auto Header] Inserting header for: {}", uri.path()),
+            )
+            .await;
+        
+        let header = self.generate_header(file_path_str, workspace_root);
+        
+        // Create a text edit to insert the header at the beginning
+        let edit = TextEdit {
                 range: Range {
                     start: Position {
                         line: 0,
@@ -482,7 +517,6 @@ impl LanguageServer for AutoHeaderServer {
                     .log_message(MessageType::INFO, format!("Header inserted for {}", uri.path()))
                     .await;
             }
-        }
     }
 }
 

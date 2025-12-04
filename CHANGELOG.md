@@ -1,5 +1,38 @@
 # Changelog
 
+## Version 0.2.5 - 2024-12-04
+
+### 🐛 Critical Bug Fixes
+
+- **Fixed Header Insertion Logic**: Removed redundant condition check that prevented headers from being inserted
+  - The bug was introduced in v0.2.4 where after checking conditions, the code had an unnecessary `if` statement
+  - This caused headers not to be inserted in projects other than the extension source code
+  - Now works correctly in all projects
+
+### 🔧 Improvements
+
+- **Simplified Extension Code**: Removed unnecessary caching mechanism
+  - Extension now directly checks if the required server version exists locally
+  - Only downloads from GitHub if the matching version is not found
+  - No more stale cache issues when upgrading versions
+  
+- **Version Management**: Extension version now explicitly controls server version
+  - Server binary path: `auto-header-server-v{extension_version}/auto-header-server`
+  - Each extension version uses its own server binary
+  - Automatic version upgrade when extension is updated
+
+- **Removed Development Mode**: Simplified local testing
+  - No more `AUTO_HEADER_DEV_MODE` environment variable needed
+  - For local testing: just place the server binary in project root
+  - Falls back to GitHub download if no local binary found
+
+### 📝 Documentation
+
+- Updated `DEV_TESTING.md` with simplified testing workflow
+- Added `build-dev.sh` script for quick local builds
+
+---
+
 ## Version 0.2.4 - 2024-12-04
 
 ### 🐛 Bug Fixes

@@ -5,71 +5,34 @@ use zed_extension_api::{
     GithubReleaseOptions, LanguageServerInstallationStatus, Os, Result,
 };
 
-struct AutoHeaderExtension {
-    cached_binary_path: Option<String>,
-}
+// Extension version - MUST match version in extension.toml
+const EXTENSION_VERSION: &str = "0.2.5";
+
+struct AutoHeaderExtension;
 
 impl AutoHeaderExtension {
     fn language_server_binary_path(
         &mut self,
         language_server_id: &zed::LanguageServerId,
-        worktree: &zed::Worktree,
+        _worktree: &zed::Worktree,
     ) -> Result<String> {
-        // Return cached path if available
-        if let Some(ref path) = self.cached_binary_path {
-            if std::path::Path::new(path).exists() {
-                return Ok(path.clone());
-            }
-        }
-
         let binary_name = if cfg!(target_os = "windows") {
             "auto-header-server.exe"
         } else {
             "auto-header-server"
         };
 
-        // DEV MODE: Use local binary if AUTO_HEADER_DEV_MODE=local is set
-        // This allows testing with locally built server without publishing to GitHub
-        if std::env::var("AUTO_HEADER_DEV_MODE").as_deref() == Ok("local") {
-            // Check project root first (for dev extension)
-            let work_dir = worktree.root_path();
-            let root_binary = std::path::Path::new(&work_dir).join(binary_name);
-            if root_binary.exists() {
-                let path_str = root_binary.to_string_lossy().to_string();
-                self.cached_binary_path = Some(path_str.clone());
-                return Ok(path_str);
-            }
-            
-            // Check server/target/release/ (direct build location)
-            let server_binary = std::path::Path::new(&work_dir)
-                .join("server")
-                .join("target")
-                .join("release")
-                .join(binary_name);
-            if server_binary.exists() {
-                let path_str = server_binary.to_string_lossy().to_string();
-                self.cached_binary_path = Some(path_str.clone());
-                return Ok(path_str);
-            }
-            
-            // Check system PATH
-            if let Some(path) = worktree.which(binary_name) {
-                self.cached_binary_path = Some(path.clone());
-                return Ok(path);
-            }
-            
-            return Err(format!(
-                "AUTO_HEADER_DEV_MODE=local but binary not found. \n\
-                Searched locations:\n\
-                - {}/auto-header-server\n\
-                - {}/server/target/release/auto-header-server\n\
-                - System PATH\n\
-                Please build the server first: cd server && cargo build --release",
-                work_dir, work_dir
-            ));
+        // Use extension version as server version
+        // This ensures we always download the matching server version
+        let version_dir = format!("auto-header-server-v{}", EXTENSION_VERSION);
+        let binary_path = format!("{version_dir}/{binary_name}");
+
+        // Check if this version is already downloaded
+        if fs::metadata(&binary_path).is_ok() {
+            return Ok(binary_path);
         }
 
-        // Download from GitHub Releases
+        // Need to download this version from GitHub
         let release = latest_github_release(
             "MrAMS/zed-auto-file-header",
             GithubReleaseOptions {
@@ -128,15 +91,6 @@ impl AutoHeaderExtension {
                 )
             })?;
 
-        let version_dir = format!("auto-header-server-{}", release.version);
-        let binary_path = format!("{version_dir}/{binary_name}");
-
-        // Check if this version is already downloaded
-        if fs::metadata(&binary_path).is_ok() {
-            self.cached_binary_path = Some(binary_path.clone());
-            return Ok(binary_path);
-        }
-
         // Notify user: downloading binary
         set_language_server_installation_status(
             language_server_id,
@@ -181,16 +135,13 @@ impl AutoHeaderExtension {
             &LanguageServerInstallationStatus::None,
         );
 
-        self.cached_binary_path = Some(binary_path.clone());
         Ok(binary_path)
     }
 }
 
 impl zed::Extension for AutoHeaderExtension {
     fn new() -> Self {
-        Self {
-            cached_binary_path: None,
-        }
+        Self
     }
 
     fn language_server_command(

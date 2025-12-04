@@ -1,6 +1,6 @@
 [package]
 name = "auto-header-server"
-version = "0.2.4"
+version = "0.2.5"
 edition = "2021"
 authors = ["MrAMS <2421653893@qq.com>"]
 license = "MIT"

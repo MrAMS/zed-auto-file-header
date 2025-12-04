@@ -1,168 +1,89 @@
 # Development Testing Guide
 
-This guide explains how to test the extension locally during development.
+This guide explains how to test the Auto File Header extension during development.
 
-## Two Testing Modes
+## Local Development Testing
 
-### Mode 1: Local Server (Development)
+For local testing, simply place the compiled server binary in your project root.
 
-Use locally built server binary without publishing to GitHub. Perfect for rapid iteration.
+### Quick Setup
 
-**Setup:**
 ```bash
 # 1. Build the server
 cd server
 cargo build --release
-cd ..
 
-# 2. Build the extension WASM
-cargo build --target wasm32-wasip2 --release
+# 2. Copy binary to project root (for testing)
+cp target/release/auto-header-server ../
 
-# 3. Set environment variable before starting Zed
-export AUTO_HEADER_DEV_MODE=local
-
-# 4. Start Zed
-zed
-
-# 5. Install dev extension
-# In Zed: Cmd/Ctrl+Shift+P -> "zed: install dev extension"
-# Select this project directory
+# 3. Reload Zed extension
+# In Zed: Cmd/Ctrl+Shift+P → "zed: reload extensions"
 ```
 
-**How it works:**
-- Extension will search for the server binary in these locations (in order):
-  1. Project root: `./auto-header-server`
-  2. Build directory: `./server/target/release/auto-header-server`
-  3. System PATH
-- If not found, shows helpful error message with searched locations
+The extension will automatically find and use the local binary if it exists in the project root.
 
-**Advantages:**
-- ✅ Test changes immediately without GitHub release
-- ✅ Fast iteration cycle
-- ✅ No internet required
+### How It Works
 
-**Disadvantages:**
-- ❌ Doesn't test the GitHub download flow
-- ❌ Requires manual build steps
+The extension searches for the server binary in this order:
+1. **Project root** - Checks if `auto-header-server` exists in the workspace root
+2. **GitHub Release** - Downloads from latest release if not found locally
 
----
+This makes local testing simple:
+- **Development**: Place binary in project root → instant testing
+- **Production**: No local binary → automatic download from GitHub
 
-### Mode 2: GitHub Release (Production Simulation)
+### Debugging
 
-Downloads the server from GitHub Releases, simulating real user experience.
-
-**Setup:**
+Check Zed logs for detailed information:
 ```bash
-# 1. Make sure AUTO_HEADER_DEV_MODE is NOT set
-unset AUTO_HEADER_DEV_MODE
-
-# 2. Clear cached server (if testing a new version)
-rm -rf ~/.local/share/zed/extensions/work/auto-header
-
-# 3. Start Zed normally
-zed
-
-# 4. Install dev extension (or use published extension)
-# Extension will download server from latest GitHub Release
+tail -f ~/.local/share/zed/logs/Zed.log | grep "Auto Header"
 ```
 
-**How it works:**
-- Extension will download the server binary from:
-  `https://github.com/MrAMS/zed-auto-file-header/releases`
-- Caches the downloaded binary in:
-  `~/.local/share/zed/extensions/work/auto-header/auto-header-server-v{VERSION}/`
+Key log messages:
+- `[Auto Header] Server initialized successfully` - Server started
+- `[Auto Header] File opened: <path>, length: <n>` - File detected
+- `[Auto Header] Inserting header for: <path>` - Header being inserted
+- `[Auto Header] Skipping non-empty file` - File already has content
+- `[Auto Header] No .auto-header.toml found` - Config file missing
 
-**Advantages:**
-- ✅ Tests the real user experience
-- ✅ Validates GitHub Release artifacts
-- ✅ Tests cross-platform download logic
+### Testing Workflow
 
-**Disadvantages:**
-- ❌ Requires publishing a GitHub Release
-- ❌ Slower iteration (need to push, wait for CI, download)
-- ❌ Requires internet connection
+1. **Make changes to server code**
+2. **Rebuild**: `cd server && cargo build --release`
+3. **Copy to root**: `cp target/release/auto-header-server ../`
+4. **Reload Zed**: Cmd/Ctrl+Shift+P → "zed: reload extensions"
+5. **Test**: Create a new empty file
 
----
+### Clean Up
+
+Before committing, remove the binary from project root:
+```bash
+rm auto-header-server
+```
+
+The binary is in `.gitignore` so it won't be accidentally committed.
+
+## Testing in Other Projects
+
+To test the extension in other projects (not the extension source code):
+1. Make sure no local binary exists in that project
+2. Extension will download from GitHub automatically
+3. Check logs to verify download and initialization
 
 ## Quick Build Script
 
-Save as `build-dev.sh`:
+The `build-dev.sh` script automates the build and copy process:
 
 ```bash
 #!/bin/bash
-set -e
-
-echo "🔨 Building server..."
 cd server
 cargo build --release
-cd ..
-
-echo "📦 Building extension..."
-cargo build --target wasm32-wasip2 --release
-
-echo "✅ Build complete!"
-echo ""
-echo "To test with local server:"
-echo "  export AUTO_HEADER_DEV_MODE=local"
-echo "  zed"
-echo ""
-echo "To test with GitHub downloads:"
-echo "  unset AUTO_HEADER_DEV_MODE"
-echo "  zed"
+cp target/release/auto-header-server ../
+echo "✓ Server built and copied to project root"
+echo "  Reload Zed extension to use updated binary"
 ```
 
-Make executable:
+Usage:
 ```bash
-chmod +x build-dev.sh
+./build-dev.sh
 ```
-
----
-
-## Troubleshooting
-
-### Server not starting in local mode?
-
-Check the error message in Zed logs (Cmd/Ctrl+Shift+P -> "zed: open log"):
-- If it says "binary not found", build the server first
-- Check the searched paths in the error message
-
-### Server not downloading in GitHub mode?
-
-1. Check internet connection
-2. Verify the release exists: https://github.com/MrAMS/zed-auto-file-header/releases
-3. Check Zed logs for download errors
-4. Clear cache and retry:
-   ```bash
-   rm -rf ~/.local/share/zed/extensions/work/auto-header
-   ```
-
-### How to switch modes?
-
-```bash
-# Switch to local mode
-export AUTO_HEADER_DEV_MODE=local
-
-# Switch to GitHub mode  
-unset AUTO_HEADER_DEV_MODE
-
-# Then reload extension in Zed:
-# Cmd/Ctrl+Shift+P -> "zed: reload extensions"
-# Or restart Zed
-```
-
----
-
-## Recommended Workflow
-
-1. **During active development:**
-   - Use `AUTO_HEADER_DEV_MODE=local`
-   - Quick iteration without releases
-
-2. **Before releasing:**
-   - Test with `AUTO_HEADER_DEV_MODE=local` first
-   - Then unset and test GitHub download flow
-   - Publish release only after both modes work
-
-3. **After release:**
-   - Install published extension (not dev)
-   - Verify it works for end users
