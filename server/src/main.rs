@@ -29,7 +29,7 @@ impl CommentStyle {
             "c" | "h" | "cpp" | "hpp" | "cc" | "hh" | "cxx" | "hxx" => 
                 Self::Block { start: "/*", end: "*/", line_prefix: " *" },
             "cs" | "java" | "js" | "jsx" | "ts" | "tsx" | "rs" | "scala" | 
-            "kt" | "kts" | "swift" | "go" | "m" | "mm" => 
+            "kt" | "kts" | "swift" | "go" | "m" | "mm" | "d" | "zig" | "dart" => 
                 Self::Block { start: "/*", end: "*/", line_prefix: " *" },
             "css" | "scss" | "sass" | "less" => 
                 Self::Block { start: "/*", end: "*/", line_prefix: " *" },
@@ -47,8 +47,8 @@ impl CommentStyle {
             "r" | "R" => Self::LineWithShebang { prefix: "#", shebang: "#!/usr/bin/env Rscript" },
             "jl" => Self::LineWithShebang { prefix: "#", shebang: "#!/usr/bin/env julia" },
             
-            // Simple line comments
-            "yaml" | "yml" | "toml" | "ini" | "conf" | "cfg" => Self::Line { prefix: "#" },
+            // Simple line comments with #
+            "yaml" | "yml" | "toml" | "ini" | "conf" | "cfg" | "tcl" | "nim" | "crystal" => Self::Line { prefix: "#" },
             
             // HTML/XML
             "html" | "htm" | "xml" | "svg" | "xhtml" => Self::HtmlComment,
@@ -56,11 +56,11 @@ impl CommentStyle {
             // SQL
             "sql" => Self::Line { prefix: "--" },
             
-            // Lua/Haskell
-            "lua" | "hs" | "lhs" => Self::Block { start: "--[[", end: "--]]", line_prefix: "" },
+            // Lua/Haskell/Ada
+            "lua" | "hs" | "lhs" | "ads" | "adb" => Self::Block { start: "--[[", end: "--]]", line_prefix: "" },
             
             // Lisp family
-            "lisp" | "cl" | "scm" | "clj" | "cljs" => Self::Line { prefix: ";;;;" },
+            "lisp" | "cl" | "scm" | "clj" | "cljs" | "rkt" | "gleam" => Self::Line { prefix: ";;;;" },
             
             // Erlang/Elixir
             "erl" | "hrl" | "ex" | "exs" => Self::Line { prefix: "%%" },
@@ -68,11 +68,17 @@ impl CommentStyle {
             // Vim
             "vim" => Self::Line { prefix: "\"" },
             
-            // Verilog and SystemVerilog
+            // Verilog and SystemVerilog (line comments)
             "v" | "vh" | "sv" | "svh" => Self::Line { prefix: "//" },
             
-            // Tcl
-            "tcl" => Self::Line { prefix: "#" },
+            // Odin (C-style but single-line //)
+            "odin" => Self::Line { prefix: "//" },
+            
+            // OCaml/F#
+            "ml" | "mli" | "fs" | "fsi" | "fsx" => Self::Block { start: "(*", end: "*)", line_prefix: " *" },
+            
+            // LaTeX/TeX/Typst
+            "tex" | "latex" | "sty" | "cls" | "bib" | "typ" => Self::Line { prefix: "%" },
             
             // Default: line comment with #
             _ => Self::Line { prefix: "#" },
@@ -419,25 +425,21 @@ impl LanguageServer for AutoHeaderServer {
             )
             .await;
 
-        // Convert URI to file path
-        // Handle cross-platform URI paths:
-        // - Unix: file:///home/user/project/file.rs
-        // - Windows: file:///C:/Users/user/project/file.rs
-        let uri_path = uri.path();
-        
-        // Convert URI path to system path (handle Windows drive letters)
-        let file_path_str = if cfg!(target_os = "windows") && uri_path.starts_with('/') && uri_path.len() > 2 {
-            // Remove leading '/' from Windows paths like '/C:/...'
-            if uri_path.chars().nth(2) == Some(':') {
-                &uri_path[1..]
-            } else {
-                uri_path
+        // Convert URI to file path (this handles URL decoding automatically)
+        let file_path = match uri.to_file_path() {
+            Ok(path) => path,
+            Err(_) => {
+                self.client
+                    .log_message(
+                        MessageType::ERROR,
+                        format!("[Auto Header] Failed to convert URI to file path: {}", uri.path()),
+                    )
+                    .await;
+                return;
             }
-        } else {
-            uri_path
         };
         
-        let file_path = Path::new(file_path_str);
+        let file_path_str = file_path.to_str().unwrap_or("");
         
         // Find the workspace root by checking which workspace folder contains this file
         let folders = self.workspace_folders.read().await;

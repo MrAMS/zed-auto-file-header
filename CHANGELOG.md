@@ -1,5 +1,50 @@
 # Changelog
 
+## Version 0.2.6 - 2024-12-04
+
+### 🐛 Critical Bug Fix
+
+- **Fixed URI Path Decoding**: Resolved issue where paths with non-ASCII characters (e.g., Chinese, emoji) were not properly decoded
+  - Previously: `/home/user/项目/` was treated as `/home/user/%E9%A1%B9%E7%9B%AE/`
+  - Now uses `uri.to_file_path()` for proper URL decoding
+  - Config files are now correctly found in directories with non-ASCII names
+
+### ✨ Extended Language Support
+
+Added support for 15+ new programming languages:
+
+**Hardware Description Languages:**
+- Verilog (`.v`, `.vh`)
+- SystemVerilog (`.sv`, `.svh`)
+- Tcl (`.tcl`)
+
+**Modern Languages:**
+- Zig (`.zig`)
+- Dart (`.dart`)
+- Nim (`.nim`)
+- Crystal (`.cr`)
+- D (`.d`)
+- Odin (`.odin`)
+- Gleam (`.gleam`)
+
+**Functional Languages:**
+- OCaml (`.ml`, `.mli`)
+- F# (`.fs`, `.fsi`, `.fsx`)
+- Racket (`.rkt`)
+
+**Document/Typesetting:**
+- Typst (`.typ`)
+- LaTeX/TeX (`.tex`, `.latex`, `.sty`, `.cls`)
+- BibTeX (`.bib`)
+
+### 🔧 Technical Improvements
+
+- Proper cross-platform URI to file path conversion
+- Better handling of special characters in file paths
+- Improved error messages when URI conversion fails
+
+---
+
 ## Version 0.2.5 - 2024-12-04
 
 ### 🐛 Critical Bug Fixes

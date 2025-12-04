@@ -6,7 +6,7 @@ use zed_extension_api::{
 };
 
 // Extension version - MUST match version in extension.toml
-const EXTENSION_VERSION: &str = "0.2.5";
+const EXTENSION_VERSION: &str = "0.2.6";
 
 struct AutoHeaderExtension;
 

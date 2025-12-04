@@ -27,3 +27,5 @@ auto-header-package/
 # Old scripts (keeping for reference but not needed)
 install.sh
 package.sh
+
+/auto-header-server
