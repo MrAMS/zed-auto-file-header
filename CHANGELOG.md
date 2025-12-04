@@ -48,6 +48,14 @@
 - **Removed `use_builtin_comment_style` option**: Comment wrapping is now always enabled
   - This simplifies the configuration and eliminates user confusion
   - The feature is so useful that there's no reason to disable it
+
+### 🏗️ Project Structure Changes
+
+- **Extension code moved to root**: For better Zed compatibility
+  - Extension Rust code now in root `src/` instead of `extension/src/`
+  - `Cargo.toml` in root instead of workspace configuration
+  - `server/` remains independent for LSP server
+  - **Note**: This only affects development - users are not affected
   - Users who need exact comment control can still include syntax in their template
 
 ### 📚 Documentation

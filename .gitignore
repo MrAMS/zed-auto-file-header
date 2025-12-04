@@ -1,6 +1,5 @@
 # Build artifacts
 /target/
-extension/target/
 **/*.rs.bk
 *.pdb
 
@@ -19,7 +18,6 @@ extension/target/
 # Extension build artifacts
 *.wasm
 extension.zip
-extension/auto-header-server
 
 # Package directory (no longer used)
 auto-header-package/

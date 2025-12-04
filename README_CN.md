@@ -349,13 +349,11 @@ template = """
 ### 项目结构
 
 ```
-├── Cargo.toml              # 工作空间根
+├── Cargo.toml              # 扩展 Rust 代码配置
 ├── .github/workflows/
 │   └── release.yml         # 自动化跨平台构建
-├── extension/              # Zed 扩展 (Wasm)
-│   ├── Cargo.toml
-│   ├── extension.toml      # 扩展清单
-│   └── src/lib.rs          # 二进制下载 & LSP 启动器
+├── extension.toml          # 扩展清单
+├── src/lib.rs              # 二进制下载 & LSP 启动器
 └── server/                 # 语言服务器 (原生)
     ├── Cargo.toml
     └── src/main.rs         # LSP 服务器逻辑

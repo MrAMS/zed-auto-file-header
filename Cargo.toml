@@ -1,10 +1,12 @@
-[workspace]
-members = ["extension", "server"]
-resolver = "2"
-
-[workspace.package]
+[package]
+name = "auto-header-extension"
 version = "0.1.0"
 edition = "2021"
 authors = ["MrAMS <2421653893@qq.com>"]
 license = "MIT"
-repository = "https://github.com/MrAMS/zed-auto-file-header"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+zed_extension_api = "0.7.0"

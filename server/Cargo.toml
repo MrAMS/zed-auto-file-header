@@ -1,9 +1,10 @@
 [package]
 name = "auto-header-server"
-version.workspace = true
-edition.workspace = true
-authors.workspace = true
-license.workspace = true
+version = "0.1.0"
+edition = "2021"
+authors = ["MrAMS <2421653893@qq.com>"]
+license = "MIT"
+repository = "https://github.com/MrAMS/zed-auto-file-header"
 
 [[bin]]
 name = "auto-header-server"

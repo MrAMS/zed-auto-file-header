@@ -355,13 +355,11 @@ Configuration changes take effect immediately (no rebuild needed).
 ### Project Structure
 
 ```
-├── Cargo.toml              # Workspace root
+├── Cargo.toml              # Extension Rust code config
 ├── .github/workflows/
 │   └── release.yml         # Automated cross-platform builds
-├── extension/              # Zed extension (Wasm)
-│   ├── Cargo.toml
-│   ├── extension.toml      # Extension manifest
-│   └── src/lib.rs          # Binary download & LSP launcher
+├── extension.toml          # Extension manifest
+├── src/lib.rs              # Binary download & LSP launcher
 └── server/                 # Language server (native)
     ├── Cargo.toml
     └── src/main.rs         # LSP server logic

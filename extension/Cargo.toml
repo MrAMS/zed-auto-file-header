@@ -1,9 +1,9 @@
 [package]
 name = "auto-header-extension"
-version.workspace = true
-edition.workspace = true
-authors.workspace = true
-license.workspace = true
+version = "0.1.0"
+edition = "2021"
+authors = ["MrAMS <2421653893@qq.com>"]
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib"]

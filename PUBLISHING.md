@@ -45,7 +45,7 @@ GitHub Actions (`.github/workflows/release.yml`) automatically:
 
 ## Binary Download Flow
 
-The extension (`extension/src/lib.rs`) handles binary downloads:
+The extension (`src/lib.rs`) handles binary downloads:
 
 ```rust
 fn language_server_binary_path(...) -> Result<String> {
@@ -64,9 +64,9 @@ Users see download progress in Zed's status bar.
 ```
 zed-auto-file-header/
 ├── .github/workflows/release.yml   # Automated cross-platform builds
-├── extension/
-│   ├── extension.toml             # Extension metadata & version
-│   └── src/lib.rs                 # Binary download logic
+├── Cargo.toml                     # Extension Rust code config
+├── extension.toml                 # Extension metadata & version
+├── src/lib.rs                     # Binary download logic
 ├── server/
 │   └── src/main.rs                # LSP server (header insertion)
 ├── LICENSE                        # MIT (required)
