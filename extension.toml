@@ -1,19 +1,19 @@
-id = "auto-header"
+id = "auto-file-header"
 name = "Auto File Header"
 description = "Automatically inserts file headers when creating new files. Zero dependencies - downloads pre-built binaries automatically. Needs .auto-header.toml config."
-version = "0.2.6"
+version = "0.2.7"
 schema_version = 1
 authors = ["MrAMS <2421653893@qq.com>"]
 repository = "https://github.com/MrAMS/zed-auto-file-header"
 
 # Language server for auto file headers
 # Supports most common programming languages
-[language_servers.auto-header]
+[language_servers.auto-file-header]
 name = "Auto Header"
 languages = [
-    "C", "C++", "Rust", "Go", "JavaScript", "TypeScript", "Python", 
+    "C", "C++", "Rust", "Go", "JavaScript", "TypeScript", "Python",
     "Java", "Kotlin", "Swift", "Objective-C", "C#", "Scala",
-    "Ruby", "Perl", "PHP", "Shell Script", "Bash", 
+    "Ruby", "Perl", "PHP", "Shell Script", "Bash",
     "HTML", "CSS", "SCSS", "Less", "YAML", "JSON", "TOML",
     "Markdown", "SQL", "Lua", "Haskell", "Elixir", "Erlang",
     "Clojure", "Lisp", "Scheme", "R", "Julia", "Vim Script",
@@ -22,6 +22,3 @@ languages = [
     "Crystal", "D", "V", "Odin", "Gleam",
     "Typst", "LaTeX", "Tex", "BibTeX"
 ]
-
-
-

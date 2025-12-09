@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.2.7 - 2024-12-04
+
+### 🐛 Critical Bug Fix
+
+- **Fixed Extension ID Mismatch**: Resolved CI/CD packaging error in Zed extensions registry
+  - Changed extension ID from `auto-header` to `auto-file-header` to match `extensions.toml`
+  - Updated language server configuration key to match new ID
+  - This fix ensures the extension can be properly packaged and published
+
+---
+
 ## Version 0.2.6 - 2024-12-04
 
 ### 🐛 Critical Bug Fix
