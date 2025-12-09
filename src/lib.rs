@@ -5,8 +5,8 @@ use zed_extension_api::{
     GithubReleaseOptions, LanguageServerInstallationStatus, Os, Result,
 };
 
-// Extension version - MUST match version in extension.toml
-const EXTENSION_VERSION: &str = "0.2.6";
+// Extension version - automatically synced from Cargo.toml at compile time
+const EXTENSION_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 struct AutoHeaderExtension;
 
@@ -87,7 +87,12 @@ impl AutoHeaderExtension {
                     Please report this at: https://github.com/MrAMS/zed-auto-file-header/issues",
                     asset_full_name,
                     release.version,
-                    release.assets.iter().map(|a| a.name.as_str()).collect::<Vec<_>>().join(", ")
+                    release
+                        .assets
+                        .iter()
+                        .map(|a| a.name.as_str())
+                        .collect::<Vec<_>>()
+                        .join(", ")
                 )
             })?;
 
@@ -104,29 +109,27 @@ impl AutoHeaderExtension {
             DownloadedFileType::GzipTar
         };
 
-        download_file(&asset.download_url, &version_dir, file_type)
-            .map_err(|e| {
-                format!(
-                    "Auto File Header: Failed to download and extract the language server binary. \n\
+        download_file(&asset.download_url, &version_dir, file_type).map_err(|e| {
+            format!(
+                "Auto File Header: Failed to download and extract the language server binary. \n\
                     Download URL: {} \n\
                     Target directory: {} \n\
                     Please check your internet connection and disk space. \n\
                     Error: {}",
-                    asset.download_url, version_dir, e
-                )
-            })?;
+                asset.download_url, version_dir, e
+            )
+        })?;
 
         // Set executable permissions on Unix-like systems
         if platform != Os::Windows {
-            make_file_executable(&binary_path)
-                .map_err(|e| {
-                    format!(
-                        "Auto File Header: Failed to set executable permissions on binary. \n\
+            make_file_executable(&binary_path).map_err(|e| {
+                format!(
+                    "Auto File Header: Failed to set executable permissions on binary. \n\
                         Binary path: {} \n\
                         Error: {}",
-                        binary_path, e
-                    )
-                })?;
+                    binary_path, e
+                )
+            })?;
         }
 
         // Download complete
@@ -150,7 +153,7 @@ impl zed::Extension for AutoHeaderExtension {
         worktree: &zed::Worktree,
     ) -> Result<zed::Command> {
         let binary_path = self.language_server_binary_path(language_server_id, worktree)?;
-        
+
         Ok(zed::Command {
             command: binary_path,
             args: vec![],

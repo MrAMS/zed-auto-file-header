@@ -13,14 +13,42 @@ This extension uses a **zero-dependency** approach - pre-built binaries are auto
 
 ### 1. Update Version
 
-Update version in `extension.toml`:
-```toml
-version = "0.2.3"
+**Automated Method (Recommended):**
+
+```bash
+# Bump version to 0.2.8 and update all files
+./bump-version.sh 0.2.8
+
+# Edit CHANGELOG.md to add actual changes (replace TODO section)
+# Then verify all versions match
+./check-version.sh
 ```
 
-### 2. Update CHANGELOG.md
+The `bump-version.sh` script automatically updates:
+- `Cargo.toml` - Main version source
+- `extension.toml` - Extension metadata
+- `CHANGELOG.md` - Adds new version header with current date
+- `src/lib.rs` - Uses `env!("CARGO_PKG_VERSION")` to auto-sync from Cargo.toml
 
-Document all changes in `CHANGELOG.md`.
+**Manual Method:**
+
+If you prefer manual updates, ensure these files are synchronized:
+1. Update `Cargo.toml`: `version = "0.2.8"`
+2. Update `extension.toml`: `version = "0.2.8"`
+3. Add entry to `CHANGELOG.md` with date and changes
+4. Run `./check-version.sh` to verify consistency
+
+**Note:** `src/lib.rs` automatically reads version from `Cargo.toml` at compile time via `env!("CARGO_PKG_VERSION")`, so you never need to manually update it.
+
+### 2. Build and Test
+
+```bash
+# Build the extension
+cargo build --release
+
+# Test locally if needed
+# (See DEV_TESTING.md for details)
+```
 
 ### 3. Create Git Tag
 
@@ -42,6 +70,32 @@ GitHub Actions (`.github/workflows/release.yml`) automatically:
 2. Add/update your extension in the fork
 3. Create pull request
 4. Wait for review and merge
+
+## Version Management
+
+### Version Sync Scripts
+
+**`check-version.sh`** - Validates version consistency:
+- Checks `Cargo.toml`, `extension.toml`, and `CHANGELOG.md`
+- Exits with error if versions don't match
+- Use before committing to catch mistakes
+
+**`bump-version.sh <version>`** - Automates version updates:
+- Updates all version files in one command
+- Adds CHANGELOG.md template with current date
+- Shows next steps for commit and push
+- Example: `./bump-version.sh 0.2.8`
+
+### Version Sources
+
+| File | Purpose | Auto-Updated |
+|------|---------|--------------|
+| `Cargo.toml` | **Primary source** - Rust package version | Manual/Script |
+| `extension.toml` | Zed extension metadata | Manual/Script |
+| `CHANGELOG.md` | User-facing version history | Manual/Script |
+| `src/lib.rs` | Runtime version (via `CARGO_PKG_VERSION`) | ✅ Automatic |
+
+The `lib.rs` uses `env!("CARGO_PKG_VERSION")` to read from `Cargo.toml` at compile time, eliminating manual sync errors.
 
 ## Binary Download Flow
 
@@ -78,13 +132,17 @@ zed-auto-file-header/
 
 Before release:
 
-- [ ] All platforms build successfully
+- [ ] Run `./check-version.sh` - all versions match
+- [ ] CHANGELOG.md updated with actual changes (not TODO)
+- [ ] Build succeeds: `cargo build --release`
+- [ ] All platforms build successfully (via GitHub Actions)
 - [ ] Binary download works on Linux/macOS/Windows
 - [ ] Headers insert correctly for all supported languages
 - [ ] Config file changes reload without restart
 - [ ] No Rust dependency required for end users
 - [ ] Documentation is up-to-date
-- Uploads to GitHub Release
+- [ ] Git tag created and pushed
+- [ ] GitHub Release created with binaries
 
 ### Binary Size
 
