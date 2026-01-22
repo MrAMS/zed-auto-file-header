@@ -2,9 +2,8 @@
 
 A zero-dependency Zed extension that automatically inserts customizable file headers when you create new, empty files.
 
-**Author:** MrAMS <2421653893@qq.com>  
 **Repository:** https://github.com/MrAMS/zed-auto-file-header  
-**Platforms:** Linux (x86_64/ARM64) • macOS (Intel/Apple Silicon) • Windows (x86_64)
+**Platforms:** Linux (x86_64/ARM64)
 
 ## ✨ Features
 
