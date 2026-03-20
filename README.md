@@ -1,4 +1,4 @@
-# Auto File Header Extensio
+# Auto File Header Extension
 
 [![Zed extensions](https://img.shields.io/badge/Zed-Auto%20File%20Header-blue)](https://zed.dev/extensions/auto-file-header)
 
