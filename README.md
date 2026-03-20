@@ -1,4 +1,7 @@
-# Auto File Header - Zed Extension
+# Auto File Header Extensio
+
+[![Zed extensions](https://img.shields.io/badge/Zed-Auto%20File%20Header-blue)](https://zed.dev/extensions/auto-file-header)
+
 
 A zero-dependency Zed extension that automatically inserts customizable file headers when you create new, empty files.
 
