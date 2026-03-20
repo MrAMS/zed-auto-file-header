@@ -2,19 +2,9 @@
 
 A zero-dependency Zed extension that automatically inserts customizable file headers when you create new, empty files.
 
-**Repository:** https://github.com/MrAMS/zed-auto-file-header  
-**Platforms:** Linux (x86_64/ARM64)
+**Repository:** https://github.com/MrAMS/zed-auto-file-header
 
-## ✨ Features
-
-- **🚀 Zero Dependencies**: No Rust or build tools required - downloads pre-built binaries automatically
-- **🌍 Cross-Platform**: Supports all major platforms and architectures
-- **⚡ Auto-Detection**: Recognizes 30+ programming languages with appropriate comment styles
-- **🎨 Fully Customizable**: Define global or per-language templates
-- **🔄 Dynamic Configuration**: Changes take effect immediately without restarting
-- **📁 Flexible Config Location**: Project-specific or user-global configuration
-
-## 📦 Installation
+## Installation
 
 1. Open Zed → Extensions panel (`Ctrl+Shift+P` → "zed: extensions")
 2. Search for "Auto File Header"
@@ -24,7 +14,7 @@ A zero-dependency Zed extension that automatically inserts customizable file hea
 
 On first use, the extension automatically downloads the appropriate pre-built binary for your platform. You'll see "auto-header: Downloading..." in the status bar - this only happens once.
 
-## 📋 Supported Languages
+## Supported Languages
 
 The extension automatically recognizes and applies appropriate comment styles for **50+ languages**:
 
@@ -40,9 +30,9 @@ The extension automatically recognizes and applies appropriate comment styles fo
 - **Systems**: Odin
 - **Editor**: Vim script
 
-📖 **See [LANGUAGES.md](LANGUAGES.md) for complete details and examples.**
+**See [LANGUAGES.md](LANGUAGES.md) for complete details and examples.**
 
-## ⚙️ Configuration
+## Configuration
 
 ### Configuration File: `.auto-header.toml`
 
@@ -97,7 +87,7 @@ All rights reserved.
 """
 ```
 
-**✨ Automatic Comment Wrapping**: Simply write your template content **once** without any comment syntax. The extension intelligently wraps it with the correct format for each language:
+**Automatic Comment Wrapping**: Simply write your template content **once** without any comment syntax. The extension intelligently wraps it with the correct format for each language:
 - **C/Rust/Java/JavaScript**: `/* ... */`
 - **Python**: `""" ... """` (with UTF-8 encoding header)
 - **Shell scripts**: `#` (with automatic shebang like `#!/usr/bin/env bash`)
@@ -108,7 +98,7 @@ All rights reserved.
 - **Tcl**: `#`
 - And 35+ more languages!
 
-**💡 This makes your config portable and clean** - write once, works everywhere!
+**This makes your config portable and clean** - write once, works everywhere!
 
 ### Template Variables
 
@@ -229,7 +219,7 @@ template = """
 
 See the included [`.auto-header.toml`](.auto-header.toml) file in this repository for a complete example with multiple language overrides.
 
-## 📝 Usage
+## Usage
 
 1. **Create a `.auto-header.toml` file** in one of the locations mentioned above
 2. **Restart Zed** (only needed after creating config for the first time)
@@ -238,7 +228,7 @@ See the included [`.auto-header.toml`](.auto-header.toml) file in this repositor
 
 **Note**: Headers are only inserted into completely empty files. If a file already has content, no header will be added.
 
-## 💡 Header Example
+## Header Example
 
 With the basic configuration above, creating a new `example.rs` file will automatically insert:
 
@@ -254,7 +244,7 @@ With the basic configuration above, creating a new `example.rs` file will automa
  */
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Extension not working
 
@@ -326,7 +316,7 @@ If your platform isn't supported, please [open an issue](https://github.com/MrAM
    """
    ```
 
-## 👨‍💻 Development
+## Development
 
 ### Development Installation
 
@@ -385,7 +375,7 @@ cargo build --release --package auto-header-extension --target wasm32-wasip1
 
 Tags matching `v*` automatically trigger GitHub Actions to build binaries for all platforms and publish a release. See [PUBLISHING.md](PUBLISHING.md) for details.
 
-## 🏗️ Architecture
+## Architecture
 
 This extension uses an **LSP Wrapper** design:
 
@@ -401,22 +391,13 @@ This extension uses an **LSP Wrapper** design:
 
 This architecture enables zero-dependency installation while maintaining full LSP capabilities.
 
-## 📄 License
+## License
 
 MIT License © 2025 MrAMS
 
-## 🤝 Contributing
+## Contributing
 
 Issues and pull requests are welcome!
 
 **Repository:** https://github.com/MrAMS/zed-auto-file-header
-
----
-
-**Quick Setup Checklist:**
-- ✅ Install extension from Zed marketplace
-- ✅ Create `.auto-header.toml` (project root or `~/.config/zed/`)
-- ✅ Add your author info and customize template
-- ✅ Restart Zed
-- ✅ Create a new file and see the magic! ✨
 
