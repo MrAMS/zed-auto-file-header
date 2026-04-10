@@ -43,24 +43,25 @@ The extension automatically recognizes and applies appropriate comment styles fo
 
 ### Configuration Priority (High to Low)
 
-The extension searches for `.auto-header.toml` in the following order and uses the **first one found**:
+The extension searches for `.auto-header.toml` in the following order and merges matching keys by priority, with earlier entries overriding later ones:
 
 1. **Project Root** (highest priority)
    - Path: `./.auto-header.toml` (in your project's root directory)
    - Use case: Project-specific headers with custom copyright, team info, etc.
 
-2. **Zed Config Directory**
-   - Linux/macOS: `~/.config/zed/auto-header.toml`
-   - Windows: `%APPDATA%\Zed\auto-header.toml`
+2. **Home Directory** 
+   - Path: `~/.auto-header.toml`
    - Use case: User-wide default settings for all projects
 
-3. **Home Directory** (lowest priority)
-   - Path: `~/.auto-header.toml`
+3. **Zed Config Directory** (lowest priority)
+   - macOS: `~/.config/zed/auto-header.toml`
+   - Windows: `%APPDATA%\Zed\auto-header.toml`
+   - Linux/FreeBSD: `$XDG_CONFIG_HOME/zed/auto-header.toml`
    - Use case: Fallback location, traditional dotfile approach
 
 **Recommendation**: 
 - Use **project root** for team projects with specific copyright/license requirements
-- Use **Zed config directory** for personal default settings across all projects
+- Use **Home Directory**/**Zed config directory** for personal default settings across all projects
 
 ### Basic Configuration Example
 

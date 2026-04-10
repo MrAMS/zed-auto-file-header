@@ -51,24 +51,25 @@
 
 ### 配置文件优先级（从高到低）
 
-扩展按以下顺序搜索 `.auto-header.toml` 并使用**第一个找到的文件**：
+扩展按以下顺序搜索 `.auto-header.toml`并按优先级合并相同key的配置值形成最终的使用配置：
 
 1. **项目根目录**（最高优先级）
    - 路径：`./.auto-header.toml`（项目根目录下）
    - 使用场景：项目特定的文件头，包含自定义版权、团队信息等
 
-2. **Zed 配置目录**
-   - Linux/macOS: `~/.config/zed/auto-header.toml`
-   - Windows: `%APPDATA%\Zed\auto-header.toml`
+2. **用户主目录**
+   - 路径：`~/.auto-header.toml`
    - 使用场景：用户级默认设置，应用于所有项目
 
-3. **用户主目录**（最低优先级）
-   - 路径：`~/.auto-header.toml`
+3. **Zed 配置目录**（最低优先级）
+   - macOS: `~/.config/zed/auto-header.toml`
+   - Windows: `%APPDATA%\Zed\auto-header.toml`
+   - Linux/FreeBSD: `$XDG_CONFIG_HOME/zed/auto-header.toml`
    - 使用场景：备用位置，传统的点文件方式
 
 **推荐用法**：
-- 团队项目使用**项目根目录**配置，设置特定的版权/许可信息
-- 个人项目使用 **Zed 配置目录**作为默认设置
+- **项目根目录**配置项目级信息，如设置特定的版权/许可信息
+- **用户主目录**或**Zed 配置目录**配置公共信息或默认设置，如用户、Email等信息
 
 ### 基础配置示例
 
