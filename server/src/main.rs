@@ -4,7 +4,35 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::sync::OnceLock;
+
+/// The resolved config directory, combining custom override or platform defaults.
+/// This is set once and cached for subsequent calls.
+/// On macOS, this is `~/.config/zed`.
+/// On Linux/FreeBSD, this is `$XDG_CONFIG_HOME/zed`.
+/// On Windows, this is `%APPDATA%\Zed`.
+static CONFIG_DIR: OnceLock<PathBuf> = OnceLock::new();
+
+/// Returns the path to the configuration directory used by Zed.
+fn config_dir() -> &'static PathBuf {
+    CONFIG_DIR.get_or_init(|| {
+        if cfg!(target_os = "windows") {
+            dirs::config_dir()
+                .expect("failed to determine RoamingAppData directory")
+                .join("Zed")
+        } else if cfg!(any(target_os = "linux", target_os = "freebsd")) {
+            if let Ok(flatpak_xdg_config) = std::env::var("FLATPAK_XDG_CONFIG_HOME") {
+                flatpak_xdg_config.into()
+            } else {
+                dirs::config_dir().expect("failed to determine XDG_CONFIG_HOME directory")
+            }
+            .join("zed")
+        } else {
+            dirs::home_dir().expect("failed to determine home directory").join(".config").join("zed")
+        }
+    })
+}
 
 /// Comment style for different programming languages
 #[derive(Debug, Clone)]
@@ -319,12 +347,7 @@ impl Config {
         }
         
         // 3. Platform-specific config directory fallback
-        // Windows: %APPDATA%\Zed\auto-header.toml
-        // macOS: ~/Library/Application Support/Zed/auto-header.toml
-        // Linux: ~/.config/zed/auto-header.toml
-        if let Some(config_dir) = dirs::config_dir() {
-            config_paths.push(config_dir.join("zed").join("auto-header.toml"));
-        }
+        config_paths.push(config_dir().join("auto-header.toml"));
         
         config_paths.iter().any(|path| !path.as_os_str().is_empty() && path.exists())
     }
@@ -343,8 +366,7 @@ impl Config {
         };
 
         // Platform config directory (lowest priority among file sources)
-        let platform_config = dirs::config_dir()
-            .and_then(|d| try_load(d.join("zed").join("auto-header.toml")))
+        let platform_config = try_load(config_dir().join("zed").join("auto-header.toml"))
             .unwrap_or_default();
 
         // Home directory (medium priority)
