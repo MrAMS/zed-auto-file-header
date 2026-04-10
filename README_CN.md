@@ -10,7 +10,7 @@
 
 - **🚀 零依赖**: 无需安装 Rust 或构建工具 - 自动下载预编译二进制文件
 - **🌍 跨平台**: 支持所有主流平台和架构
-- **⚡ 自动识别**: 识别 35+ 种编程语言并使用适当的注释风格
+- **⚡ 自动识别**: 识别 50+ 种编程语言并使用适当的注释风格
 - **🎨 完全可定制**: 定义全局或针对特定语言的模板
 - **🔄 动态配置**: 配置更改立即生效，无需重启
 - **📁 灵活配置位置**: 支持项目特定配置或用户全局配置
@@ -30,7 +30,7 @@
 扩展自动识别并为 **50+ 种语言**应用适当的注释风格：
 
 - **C 风格**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala, Dart, Zig, D
-- **脚本**: Python, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl, Nim, Crystal
+- **脚本**: Python, PHP, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl, Nim, Crystal
 - **硬件**: Verilog, SystemVerilog
 - **标记**: HTML, XML, SVG
 - **样式**: CSS, SCSS, SASS, LESS
@@ -101,6 +101,7 @@ Copyright (c) {year} {copyright_holder}
 
 **✨ 自动注释包装**：只需编写模板内容**一次**，无需任何注释语法。扩展会智能地为每种语言添加正确的注释格式：
 - **C/Rust/Java/JavaScript**：`/* ... */`
+- **PHP**：`<?php` + `/* ... */`
 - **Python**：`""" ... """`（包含 UTF-8 编码声明）
 - **Shell 脚本**：`#`（包含自动添加的 shebang，如 `#!/usr/bin/env bash`）
 - **HTML**：`<!-- ... -->`
@@ -108,7 +109,7 @@ Copyright (c) {year} {copyright_holder}
 - **Lua**：`--[[ ... ]]`
 - **Verilog/SystemVerilog**：`//`
 - **Tcl**：`#`
-- 以及 35+ 种其他语言！
+- 以及更多语言！
 
 **💡 这让您的配置更简洁、更具可移植性** - 编写一次，处处适用！
 
