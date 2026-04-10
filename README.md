@@ -202,23 +202,15 @@ Copyright (c) {year} {copyright_holder}
 
 [header.by_extension.sh]
 template = """
-#!/usr/bin/env bash
-#
-# File: {filename}
-# Author: {author}
-# Date: {date}
-#
-
+File: {filename}
+Author: {author}
+Date: {date}
 """
 
 [header.by_extension.html]
 template = """
-<!--
-  File: {filename}
-  Author: {author}
-  Date: {date}
--->
-
+File: {filename}
+Date: {date}
 """
 ```
 
