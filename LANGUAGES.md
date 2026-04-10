@@ -1,6 +1,6 @@
 # Language Support
 
-The Auto Header extension automatically wraps your template content with the appropriate comment format for **35+ programming languages**. Simply write your template once, and the extension handles the rest!
+The Auto Header extension automatically wraps your template content with the appropriate comment format for **50+ programming languages**. Simply write your template once, and the extension handles the rest!
 
 ## How It Works
 
@@ -27,6 +27,23 @@ The extension automatically wraps it with the correct comment syntax for each la
 
 **Auto-generated Format**:
 ```c
+/*
+ * File: {filename}
+ * Author: {author}
+ * Date: {date}
+ */
+```
+
+### PHP Files (`<?php` + `/* ... */`)
+
+**Languages**: PHP
+
+**Extensions**: `.php`, `.phtml`, `.php3`, `.php4`, `.php5`, `.phps`, `.phpt`
+
+**Auto-generated Format**:
+```php
+<?php
+
 /*
  * File: {filename}
  * Author: {author}
@@ -209,7 +226,7 @@ Date: {date}
 ✨ **Write Once, Run Everywhere**: Your template content works for all languages  
 🎯 **Automatic Format Detection**: Comment style chosen based on file extension  
 🔧 **Fully Customizable**: Override any language with custom templates  
-📦 **35+ Languages Supported**: From C to Verilog, Python to Vim script  
+📦 **50+ Languages Supported**: From C to Verilog, Python to Vim script  
 
 ## Customization
 
@@ -230,6 +247,7 @@ The extension will still wrap it with Python's `""" """` format automatically.
 | Category | Languages | Extensions |
 |----------|-----------|------------|
 | **C-Style** | C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala | `.c`, `.cpp`, `.cs`, `.java`, `.js`, `.ts`, `.rs`, `.go`, `.swift`, `.kt`, `.scala` |
+| **PHP** | PHP | `.php`, `.phtml`, `.php3`, `.php4`, `.php5`, `.phps`, `.phpt` |
 | **Line Comments** | Verilog, SystemVerilog | `.v`, `.vh`, `.sv`, `.svh` |
 | **Python** | Python | `.py`, `.pyw`, `.pyx` |
 | **Shell** | Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl | `.sh`, `.bash`, `.zsh`, `.fish`, `.rb`, `.pl`, `.r`, `.jl`, `.tcl` |

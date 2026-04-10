@@ -8,12 +8,13 @@
 # language-appropriate comment syntax. This means you can write your content
 # ONCE without comment markers, and it will be wrapped correctly for each language:
 #   - C/Rust/JavaScript: /* ... */
+#   - PHP: <?php + /* ... */
 #   - Python: """ ... """
 #   - Shell scripts: # ... with shebang
 #   - HTML: <!-- ... -->
 #   - Verilog/SystemVerilog: // ...
 #   - Tcl: # ...
-#   - And 35+ more languages!
+#   - And 50+ more languages!
 #
 # Available template variables:
 #   {filename}  - Name of the file (example.rs)

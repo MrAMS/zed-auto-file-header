@@ -22,7 +22,7 @@ On first use, the extension automatically downloads the appropriate pre-built bi
 The extension automatically recognizes and applies appropriate comment styles for **50+ languages**:
 
 - **C-Style**: C, C++, C#, Java, JavaScript, TypeScript, Rust, Go, Swift, Kotlin, Scala, Dart, Zig, D
-- **Scripts**: Python, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl, Nim, Crystal
+- **Scripts**: Python, PHP, Bash, Zsh, Fish, Ruby, Perl, R, Julia, Tcl, Nim, Crystal
 - **Hardware**: Verilog, SystemVerilog
 - **Markup**: HTML, XML, SVG
 - **Styles**: CSS, SCSS, SASS, LESS
@@ -93,6 +93,7 @@ All rights reserved.
 
 **Automatic Comment Wrapping**: Simply write your template content **once** without any comment syntax. The extension intelligently wraps it with the correct format for each language:
 - **C/Rust/Java/JavaScript**: `/* ... */`
+- **PHP**: `<?php` + `/* ... */`
 - **Python**: `""" ... """` (with UTF-8 encoding header)
 - **Shell scripts**: `#` (with automatic shebang like `#!/usr/bin/env bash`)
 - **HTML**: `<!-- ... -->`
@@ -100,7 +101,7 @@ All rights reserved.
 - **Lua**: `--[[ ... ]]`
 - **Verilog/SystemVerilog**: `//`
 - **Tcl**: `#`
-- And 35+ more languages!
+- And many more languages!
 
 **This makes your config portable and clean** - write once, works everywhere!
 
@@ -404,4 +405,3 @@ MIT License © 2025 MrAMS
 Issues and pull requests are welcome!
 
 **Repository:** https://github.com/MrAMS/zed-auto-file-header
-
