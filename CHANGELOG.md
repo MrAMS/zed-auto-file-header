@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.3.0 - 2026-04-10
+
+### 🔧 Changes
+
+- Refactor comments
+- Add PHP support
+- Support merging partial configs from multiple locations
+
+---
+
+
 ## Version 0.2.7 - 2024-12-04
 
 ### 🐛 Critical Bug Fix

@@ -7,6 +7,8 @@ A zero-dependency Zed extension that automatically inserts customizable file hea
 
 **Repository:** https://github.com/MrAMS/zed-auto-file-header
 
+[中文README](./README_CN.md)
+
 ## Installation
 
 1. Open Zed → Extensions panel (`Ctrl+Shift+P` → "zed: extensions")
