@@ -11,7 +11,7 @@ repository = "https://github.com/MrAMS/zed-auto-file-header"
 [language_servers.auto-file-header]
 name = "Auto Header"
 languages = [
-    "C", "C++", "Rust", "Go", "JavaScript", "TypeScript", "Python",
+    "C", "C++", "Rust", "Go", "JavaScript", "TypeScript", "TSX", "Python",
     "Java", "Kotlin", "Swift", "Objective-C", "C#", "Scala",
     "Ruby", "Perl", "PHP", "Shell Script", "Bash",
     "HTML", "CSS", "SCSS", "Less", "YAML", "JSON", "TOML",
