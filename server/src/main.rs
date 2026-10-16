@@ -249,6 +249,8 @@ struct AuthorConfig {
 struct ProjectConfig {
     name: String,
     #[serde(default)]
+    license: String,
+    #[serde(default)]
     copyright_holder: String,
 }
 
@@ -280,6 +282,7 @@ impl Default for Config {
             },
             project: ProjectConfig {
                 name: "My Project".to_string(),
+                license: "License Short Name".to_string(),
                 copyright_holder: String::new(),
             },
             header: HeaderConfig {
@@ -305,6 +308,7 @@ struct PartialAuthorConfig {
 #[derive(Debug, Clone, Deserialize, Default)]
 struct PartialProjectConfig {
     name: Option<String>,
+    license: Option<String>,
     copyright_holder: Option<String>,
 }
 
@@ -336,6 +340,7 @@ impl PartialConfig {
             project: match (self.project, lower.project) {
                 (Some(high), Some(low)) => Some(PartialProjectConfig {
                     name: high.name.or(low.name),
+                    license: high.license.or(low.license),
                     copyright_holder: high.copyright_holder.or(low.copyright_holder),
                 }),
                 (a, b) => a.or(b),
@@ -370,6 +375,7 @@ impl PartialConfig {
             },
             project: ProjectConfig {
                 name: project.name.unwrap_or(default.project.name),
+                license: project.license.unwrap_or(default.project.license),
                 copyright_holder: project
                     .copyright_holder
                     .unwrap_or(default.project.copyright_holder),
@@ -543,6 +549,7 @@ impl AutoHeaderServer {
             .replace("{author}", &config.author.name)
             .replace("{email}", &config.author.email)
             .replace("{project}", &config.project.name)
+            .replace("{license}", &config.project.license)
             .replace("{copyright_holder}", copyright_holder)
             .replace("{interpreter}", interpreter);
 
