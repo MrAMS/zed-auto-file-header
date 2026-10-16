@@ -748,12 +748,14 @@ mod tests {
         author_name: Option<&str>,
         author_email: Option<&str>,
         project_name: Option<&str>,
+        project_license: Option<&str>,
         copyright_holder: Option<&str>,
         header_template: Option<&str>,
         by_extension: Option<HashMap<String, ExtensionHeaderConfig>>,
     ) -> PartialConfig {
         let has_author = author_name.is_some() || author_email.is_some();
-        let has_project = project_name.is_some() || copyright_holder.is_some();
+        let has_project =
+            project_name.is_some() || copyright_holder.is_some() || project_license.is_some();
         let has_header = header_template.is_some() || by_extension.is_some();
         PartialConfig {
             author: has_author.then(|| PartialAuthorConfig {
@@ -762,6 +764,7 @@ mod tests {
             }),
             project: has_project.then(|| PartialProjectConfig {
                 name: project_name.map(str::to_string),
+                license: project_license.map(str::to_string),
                 copyright_holder: copyright_holder.map(str::to_string),
             }),
             header: has_header.then(|| PartialHeaderConfig {
@@ -825,6 +828,7 @@ mod tests {
         assert_eq!(config.author.name, default.author.name);
         assert_eq!(config.author.email, default.author.email);
         assert_eq!(config.project.name, default.project.name);
+        assert_eq!(config.project.license, default.project.license);
         assert_eq!(
             config.project.copyright_holder,
             default.project.copyright_holder
@@ -851,6 +855,7 @@ mod tests {
         assert_eq!(config.author.name, "Alice");
         assert_eq!(config.author.email, default.author.email);
         assert_eq!(config.project.name, default.project.name);
+        assert_eq!(config.project.license, default.project.license);
         assert_eq!(config.header.template, default.header.template);
     }
 
@@ -866,8 +871,9 @@ mod tests {
             None,
             None,
             None,
+            None,
         );
-        let project = make_partial(Some("ProjectUser"), None, None, None, None, None);
+        let project = make_partial(Some("ProjectUser"), None, None, None, None, None, None);
         let config = project.merge(home).into_config();
         assert_eq!(config.author.name, "ProjectUser"); // project wins
         assert_eq!(config.author.email, "home@example.com"); // home fills the gap
@@ -883,8 +889,9 @@ mod tests {
             None,
             None,
             None,
+            None,
         );
-        let home = make_partial(Some("HomeUser"), None, None, None, None, None);
+        let home = make_partial(Some("HomeUser"), None, None, None, None, None, None);
         let config = home.merge(platform).into_config();
         assert_eq!(config.author.name, "HomeUser"); // home wins
         assert_eq!(config.author.email, "platform@example.com"); // falls through to platform
@@ -894,7 +901,7 @@ mod tests {
     #[test]
     fn missing_everywhere_uses_default() {
         // Only author.name is set across all sources; everything else should be default.
-        let project = make_partial(Some("OnlyName"), None, None, None, None, None);
+        let project = make_partial(Some("OnlyName"), None, None, None, None, None, None);
         let config = project
             .merge(PartialConfig::default())
             .merge(PartialConfig::default())
@@ -903,6 +910,7 @@ mod tests {
         assert_eq!(config.author.name, "OnlyName");
         assert_eq!(config.author.email, default.author.email);
         assert_eq!(config.project.name, default.project.name);
+        assert_eq!(config.project.license, default.project.license);
         assert_eq!(config.header.template, default.header.template);
     }
 
@@ -916,6 +924,7 @@ mod tests {
             Some("PlatformUser"),
             Some("platform@corp.com"),
             Some("PlatformApp"),
+            Some("Platform License Name"),
             Some("Platform Corp"),
             Some("platform template"),
             None,
@@ -925,13 +934,15 @@ mod tests {
             None,
             Some("HomeApp"), // overrides platform project.name
             None,
+            None,
             None, // header.template: not set → falls to platform
             None,
         );
         let project = make_partial(
             None, // author.name: not set → falls to home
             None,
-            None,                     // project.name: not set → falls to home
+            None, // project.name: not set → falls to home
+            Some("Project License"),
             Some("My Startup"),       // overrides both home and platform
             Some("project template"), // overrides both home and platform
             None,
@@ -942,6 +953,7 @@ mod tests {
         assert_eq!(config.author.name, "HomeUser"); // home > platform
         assert_eq!(config.author.email, "platform@corp.com"); // only in platform
         assert_eq!(config.project.name, "HomeApp"); // home > platform
+        assert_eq!(config.project.license, "Project License"); // project wins
         assert_eq!(config.project.copyright_holder, "My Startup"); // project wins
         assert_eq!(config.header.template, "project template"); // project wins
     }
@@ -958,6 +970,7 @@ mod tests {
             None,
             None,
             None,
+            None,
             Some(ext_map(&[("rs", "platform rs"), ("py", "platform py")])),
         );
         let home = make_partial(
@@ -966,9 +979,11 @@ mod tests {
             None,
             None,
             None,
+            None,
             Some(ext_map(&[("rs", "home rs"), ("go", "home go")])),
         );
         let project = make_partial(
+            None,
             None,
             None,
             None,
@@ -994,9 +1009,11 @@ mod tests {
             None,
             None,
             None,
+            None,
             Some(ext_map(&[("ts", "platform ts")])),
         );
         let home = make_partial(
+            None,
             None,
             None,
             None,
@@ -1053,6 +1070,7 @@ email = "platform@corp.com"
 
 [project]
 name = "PlatformApp"
+license = "Platform Default License Name"
 copyright_holder = "Platform Corp"
 
 [header]
@@ -1067,6 +1085,7 @@ template = "home template"
 "#;
         let project_toml = r#"
 [project]
+license = "Project License Name"
 copyright_holder = "My Startup"
 "#;
 
@@ -1082,6 +1101,11 @@ copyright_holder = "My Startup"
         assert_eq!(config.author.email, "platform@corp.com");
         // project.name: project=None, home=None, platform=Some → "PlatformApp"
         assert_eq!(config.project.name, "PlatformApp");
+        // project.license: project=Some → "Project License Name", home=None, platform=Some → "Platform Default License Name"
+        // Should use project.license rather than reading platform.license since not all projects uses same License
+        // as platform preferred.
+        // TLDR: project.license > platform.license
+        assert_eq!(config.project.license, "Project License Name");
         // project.copyright_holder: project=Some → "My Startup"
         assert_eq!(config.project.copyright_holder, "My Startup");
         // header.template: project=None, home=Some → "home template"
