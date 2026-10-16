@@ -1102,9 +1102,9 @@ copyright_holder = "My Startup"
         // project.name: project=None, home=None, platform=Some → "PlatformApp"
         assert_eq!(config.project.name, "PlatformApp");
         // project.license: project=Some → "Project License Name", home=None, platform=Some → "Platform Default License Name"
-        // Should use project.license rather than reading platform.license since not all projects uses same License
+        // Should use .license from Project rather than reading .license from Platform since not all projects uses same License
         // as platform preferred.
-        // TLDR: project.license > platform.license
+        // TLDR: project > platform
         assert_eq!(config.project.license, "Project License Name");
         // project.copyright_holder: project=Some → "My Startup"
         assert_eq!(config.project.copyright_holder, "My Startup");
